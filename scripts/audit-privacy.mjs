@@ -2,7 +2,15 @@ import { readFile, readdir } from 'node:fs/promises'
 import { extname, resolve } from 'node:path'
 
 const root = resolve(import.meta.dirname, '..')
-const scanRoots = ['web/src', 'web/index.html', 'web/dist', 'miniprogram'].map((path) => resolve(root, path))
+const scanRoots = [
+  'web/src',
+  'web/index.html',
+  'web/minimal/index.html',
+  'web/paper/index.html',
+  'web/cyber/index.html',
+  'web/dist',
+  'miniprogram',
+].map((path) => resolve(root, path))
 const allowedExtensions = new Set(['.ts', '.js', '.css', '.html', '.json', '.wxml', '.wxss', '.less'])
 const banned = [
   ['network request', /\bfetch\s*\(|XMLHttpRequest|sendBeacon|WebSocket|EventSource|wx\.(?:request|connectSocket|sendSocketMessage|createTCPSocket|createUDPSocket)\s*\(/],

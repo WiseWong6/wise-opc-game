@@ -12,12 +12,59 @@ import {
   type Challenge,
   type GameState,
 } from '../../packages/game-core/src/index.ts'
-import './style.css'
+import './styles/base.css'
+import './styles/minimal.css'
+import './styles/paper.css'
+import './styles/cyber.css'
+
+type ThemeName = 'minimal' | 'paper' | 'cyber'
+
+interface ThemeChrome {
+  edition: string
+  index: string
+  identityLines: string[]
+  identityMeta: string
+  statePrefix: string
+}
+
+const THEMES: Record<ThemeName, ThemeChrome> = {
+  minimal: {
+    edition: 'SBTI 式极简版',
+    index: 'OPC / 012',
+    identityLines: ['ONE PERSON', 'COMPANY', 'SURVIVAL'],
+    identityMeta: '答案只在当前页面内存中存在',
+    statePrefix: 'OPC / SURVIVAL',
+  },
+  paper: {
+    edition: '纸张账单版',
+    index: '费用报销单 / 000–012',
+    identityLines: ['壹人', '有限公司', '生存账单'],
+    identityMeta: '本票据仅供清醒，不具备抵扣功能',
+    statePrefix: 'EXPENSE / CLAIM',
+  },
+  cyber: {
+    edition: '极简赛博版',
+    index: 'OPC_OS / BUILD 0.12',
+    identityLines: ['ONE_PERSON', 'RISK_KERNEL', 'SURVIVAL_RUN'],
+    identityMeta: 'SESSION: MEMORY_ONLY · DATA_EGRESS: 0',
+    statePrefix: 'OPC://SURVIVAL',
+  },
+}
 
 const challenges = challengeData as Challenge[]
 const appElement = document.querySelector<HTMLDivElement>('#app')
 if (!appElement) throw new Error('App root is missing.')
 const app: HTMLDivElement = appElement
+
+function resolveTheme(): ThemeName {
+  const candidate = document.body.dataset.theme
+  if (candidate === 'paper' || candidate === 'cyber') return candidate
+  return 'minimal'
+}
+
+const themeName = resolveTheme()
+const theme = THEMES[themeName]
+document.documentElement.dataset.theme = themeName
 
 let state: GameState = createInitialState()
 let transition: { receipt: string; costText: string; nextState: GameState } | null = null
@@ -36,28 +83,31 @@ function ledgerMarkup(gameState: GameState): string {
   const ledger = formatLedger(gameState.lockedResult?.ledger ?? gameState.ledger)
   return `
     <dl class="ledger" aria-label="当前三本账">
-      <div><dt>现金</dt><dd>${escapeHtml(ledger.cash)}</dd></div>
-      <div><dt>时间</dt><dd>${escapeHtml(ledger.time)}</dd></div>
-      <div><dt>风险</dt><dd>${escapeHtml(ledger.risk)}</dd></div>
+      <div><dt>现金 / CASH</dt><dd>${escapeHtml(ledger.cash)}</dd></div>
+      <div><dt>时间 / TIME</dt><dd>${escapeHtml(ledger.time)}</dd></div>
+      <div><dt>风险 / RISK</dt><dd>${escapeHtml(ledger.risk)}</dd></div>
     </dl>
   `
 }
 
 function shell(content: string, stateLabel: string): string {
   return `
-    <main class="shell">
+    <main class="shell" data-view="${escapeHtml(state.phase)}">
       <aside class="identity" aria-label="产品名称">
-        <span class="identity__index">OPC / 012</span>
-        <div>
-          <p>ONE PERSON</p>
-          <p>COMPANY</p>
-          <p>SURVIVAL</p>
+        <span class="identity__index">${escapeHtml(theme.index)}</span>
+        <div class="identity__title">
+          ${theme.identityLines.map((line) => `<p>${escapeHtml(line)}</p>`).join('')}
         </div>
-        <small>答案只在当前页面内存中存在</small>
+        <div class="identity__footer">
+          <small>${escapeHtml(theme.identityMeta)}</small>
+          <a href="/" class="edition-link">切换视觉版本 →</a>
+        </div>
       </aside>
       <section class="game-card" aria-live="polite">
+        <div class="paper-teeth" aria-hidden="true"></div>
+        <div class="cyber-grid" aria-hidden="true"></div>
         <header class="mobile-brand">
-          <span>OPC / SURVIVAL</span>
+          <span>${escapeHtml(theme.statePrefix)}</span>
           <span>${escapeHtml(stateLabel)}</span>
         </header>
         ${content}
@@ -69,7 +119,7 @@ function shell(content: string, stateLabel: string): string {
 function renderIntro(): string {
   return shell(`
     <div class="intro">
-      <div class="intro__label">一人公司生存模拟器 · 极简版</div>
+      <div class="intro__label">一人公司生存模拟器 · ${escapeHtml(theme.edition)}</div>
       <h1>你想做一人公司。<br />它也想做你。</h1>
       <p class="intro__lead">12 个问题，约 4 分钟。每次选择继续，现金、时间和风险会被记上一笔；任何一关都可以体面离场。</p>
       <div class="privacy-note">
@@ -77,7 +127,7 @@ function renderIntro(): string {
         <p><strong>零数据模式</strong>：不登录、不联网提交、不使用 Cookie 或本地存储。刷新或关闭后，所有答案立即消失。</p>
       </div>
       <button class="button button--primary button--wide" data-action="start">开始承担</button>
-        <p class="fine-print">娱乐化个人经验，不构成法律、财税或安全建议。成本采用用户提供及文章历史口径，仍需逐项复核，不代表实时市场报价。</p>
+      <p class="fine-print">娱乐化个人经验，不构成法律、财税或安全建议。成本采用用户提供及文章历史口径，仍需逐项复核，不代表实时市场报价。</p>
     </div>
   `, '准备开始')
 }
@@ -128,7 +178,8 @@ function renderChallenge(): string {
       ${spectator ? '<p class="spectator-note">你的结局与三本账已经冻结，后续只看热闹，不再增加任何分数。</p>' : ''}
       ${transition ? `
         <div class="pass-overlay" role="status">
-          <span>PASS ${String(challenge.stage).padStart(2, '0')}</span>
+          <div class="pass-overlay__scan" aria-hidden="true"></div>
+          <span class="pass-overlay__code">PASS ${String(challenge.stage).padStart(2, '0')}</span>
           <strong>${escapeHtml(transition.receipt)}</strong>
           <small>${escapeHtml(transition.costText)}</small>
         </div>
@@ -166,6 +217,7 @@ function renderResult(): string {
 }
 
 function render(): void {
+  app.dataset.phase = state.phase
   if (state.phase === 'intro') app.innerHTML = renderIntro()
   else if (state.phase === 'playing' || (state.phase === 'spectating' && state.currentIndex < challenges.length)) app.innerHTML = renderChallenge()
   else app.innerHTML = renderResult()

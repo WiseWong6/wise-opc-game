@@ -1,0 +1,100 @@
+body[data-theme="paper"] {
+  --ink: #2f231b;
+  --muted: #786354;
+  --line: #bca98e;
+  --surface: #f4ead5;
+  --surface-soft: #eadcc2;
+  --accent: #9d2c21;
+  --accent-ink: #fff8e9;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255,255,255,.15), transparent 22%),
+    repeating-linear-gradient(90deg, rgba(58,38,25,.08) 0 1px, transparent 1px 7px),
+    #453126;
+}
+
+body[data-theme="paper"] .shell { grid-template-columns: minmax(250px, .48fr) minmax(560px, 780px) minmax(30px, .3fr); }
+body[data-theme="paper"] .identity {
+  margin: 28px 0 28px 28px;
+  border: 1px solid #c8b79a;
+  border-right: 0;
+  color: #3c2b20;
+  background: #e6d5b8;
+  box-shadow: 0 20px 45px rgba(0,0,0,.22);
+}
+body[data-theme="paper"] .identity::after { content: "财务联\A OPERATOR COPY"; white-space: pre; color: #9d2c21; font: 800 11px/1.4 ui-monospace, monospace; letter-spacing: .12em; }
+body[data-theme="paper"] .identity__index { padding-bottom: 12px; border-bottom: 2px solid #3c2b20; }
+body[data-theme="paper"] .identity__title p { font-family: Georgia, "Songti SC", serif; font-size: clamp(34px, 4vw, 64px); font-weight: 900; line-height: .94; letter-spacing: -.06em; }
+body[data-theme="paper"] .game-card {
+  margin: 28px 0;
+  min-height: calc(100vh - 56px);
+  padding-top: 44px;
+  border: 0;
+  background:
+    linear-gradient(90deg, transparent 42px, rgba(157,44,33,.16) 43px, transparent 44px),
+    repeating-linear-gradient(0deg, transparent 0 30px, rgba(77,55,39,.07) 31px),
+    #f4ead5;
+  box-shadow: 0 20px 55px rgba(0,0,0,.28);
+}
+body[data-theme="paper"] .paper-teeth {
+  position: absolute;
+  inset: 0 0 auto;
+  display: block;
+  height: 15px;
+  background: radial-gradient(circle at 8px -1px, #453126 8px, transparent 8.5px) 0 0 / 20px 15px repeat-x;
+}
+body[data-theme="paper"] .mobile-brand { border-bottom: 2px solid #3c2b20; }
+body[data-theme="paper"] .mobile-brand::after { content: "NO. 000012"; position: absolute; right: 0; top: 18px; color: #9d2c21; font: 700 9px/1 ui-monospace, monospace; }
+body[data-theme="paper"] .intro h1,
+body[data-theme="paper"] .question h1,
+body[data-theme="paper"] .result h1 { font-family: Georgia, "Songti SC", "STSong", serif; font-weight: 850; letter-spacing: -.045em; }
+body[data-theme="paper"] .intro__label,
+body[data-theme="paper"] .question__category { width: fit-content; padding: 6px 9px; border: 1px solid #9d2c21; color: #9d2c21; transform: rotate(-1deg); }
+body[data-theme="paper"] .privacy-note { border-width: 0 0 1px; background: rgba(225,208,178,.65); }
+body[data-theme="paper"] .privacy-note__dot { border-radius: 0; transform: rotate(45deg); }
+body[data-theme="paper"] .button { border-width: 2px; box-shadow: 3px 3px 0 rgba(58,38,25,.22); }
+body[data-theme="paper"] .button:hover { box-shadow: 1px 1px 0 rgba(58,38,25,.28); }
+body[data-theme="paper"] .button--ghost { color: #3c2b20; border-color: #3c2b20; }
+body[data-theme="paper"] .progress { height: 10px; border: 1px solid #3c2b20; background: repeating-linear-gradient(90deg, transparent 0 7px, rgba(58,38,25,.12) 7px 8px); }
+body[data-theme="paper"] .progress span { background: repeating-linear-gradient(135deg, #9d2c21 0 5px, #b94132 5px 10px); }
+body[data-theme="paper"] .ledger { gap: 0; border: 2px solid #3c2b20; background: transparent; transform: rotate(.18deg); }
+body[data-theme="paper"] .ledger div { background: rgba(244,234,213,.75); border-right: 1px dashed #786354; }
+body[data-theme="paper"] .ledger div:last-child { border-right: 0; }
+body[data-theme="paper"] .ledger dt { text-transform: uppercase; }
+body[data-theme="paper"] .cost-list { padding: 10px 12px; border-top: 1px dashed #786354; border-bottom: 1px dashed #786354; }
+body[data-theme="paper"] .cost-list li::before { content: "¥ "; color: #9d2c21; font-weight: 900; }
+body[data-theme="paper"] .pass-overlay {
+  color: #3c2b20;
+  background: rgba(244,234,213,.97);
+  animation: paper-flash 600ms cubic-bezier(.2,.75,.2,1) both;
+}
+body[data-theme="paper"] .pass-overlay__code {
+  display: grid;
+  place-items: center;
+  width: min(54vw, 330px);
+  aspect-ratio: 1;
+  border: clamp(8px, 1.4vw, 14px) double #a52d22;
+  border-radius: 50%;
+  color: #a52d22;
+  font: 900 clamp(42px, 7vw, 76px)/.9 Georgia, serif;
+  letter-spacing: -.06em;
+  transform: rotate(-8deg);
+  box-shadow: inset 0 0 0 5px #f4ead5, inset 0 0 0 8px #a52d22;
+}
+body[data-theme="paper"] .pass-overlay__code::before { content: "已入账"; position: absolute; margin-top: -74px; font: 900 18px/1 "Songti SC", serif; letter-spacing: .5em; }
+body[data-theme="paper"] .pass-overlay small { color: #786354; }
+body[data-theme="paper"] .result__stamp { border: 4px double #9d2c21; color: #9d2c21; background: transparent; transform: rotate(-3deg); }
+body[data-theme="paper"] .result__notice { border-style: dashed; }
+
+@keyframes paper-flash {
+  0% { opacity: 0; transform: translateY(-18px) rotate(-1deg); }
+  22%, 80% { opacity: 1; transform: translateY(0) rotate(0); }
+  100% { opacity: 0; transform: translateY(12px) rotate(.5deg); }
+}
+
+@media (max-width: 920px) {
+  body[data-theme="paper"] .game-card { margin: 14px; min-height: calc(100vh - 28px); }
+}
+@media (max-width: 600px) {
+  body[data-theme="paper"] .game-card { margin: 0; min-height: 100vh; padding-top: max(28px, env(safe-area-inset-top)); }
+  body[data-theme="paper"] .pass-overlay { margin: calc(-1 * max(28px, env(safe-area-inset-top))) -20px -24px; }
+}
