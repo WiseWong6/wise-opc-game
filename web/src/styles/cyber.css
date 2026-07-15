@@ -1,0 +1,86 @@
+body[data-theme="cyber"] {
+  --ink: #d9ffe9;
+  --muted: #78a98d;
+  --line: #194830;
+  --surface: rgba(5, 12, 9, .96);
+  --surface-soft: rgba(12, 35, 24, .72);
+  --accent: #65ffa4;
+  --accent-ink: #031008;
+  background:
+    linear-gradient(rgba(54,255,138,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(54,255,138,.025) 1px, transparent 1px),
+    radial-gradient(circle at 50% 0, #10291b, #030605 66%);
+  background-size: 26px 26px, 26px 26px, auto;
+}
+
+body[data-theme="cyber"]::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(0,0,0,.2) 3px 4px);
+  mix-blend-mode: multiply;
+}
+body[data-theme="cyber"] .identity { border-color: #194830; background: rgba(3,9,6,.65); box-shadow: inset -1px 0 rgba(101,255,164,.06); }
+body[data-theme="cyber"] .identity__index { color: #65ffa4; text-shadow: 0 0 12px rgba(101,255,164,.5); }
+body[data-theme="cyber"] .identity__title { position: relative; }
+body[data-theme="cyber"] .identity__title::before { content: "[ KERNEL ONLINE ]"; display: block; margin-bottom: 18px; color: #ffb44a; font: 700 10px/1 ui-monospace, monospace; letter-spacing: .14em; }
+body[data-theme="cyber"] .identity__title p { font: 800 clamp(25px, 2.7vw, 48px)/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: -.07em; text-shadow: 0 0 18px rgba(101,255,164,.15); }
+body[data-theme="cyber"] .game-card { border-color: #194830; box-shadow: 0 0 80px rgba(49,255,131,.05); }
+body[data-theme="cyber"] .cyber-grid {
+  position: absolute;
+  inset: 0;
+  display: block;
+  opacity: .35;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 0 64%, rgba(101,255,164,.05) 64.2%, transparent 64.5%);
+}
+body[data-theme="cyber"] .mobile-brand { color: #65ffa4; border-color: #28734c; text-shadow: 0 0 10px rgba(101,255,164,.35); }
+body[data-theme="cyber"] .intro h1,
+body[data-theme="cyber"] .question h1,
+body[data-theme="cyber"] .result h1 { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-weight: 760; letter-spacing: -.065em; }
+body[data-theme="cyber"] .intro h1::before { content: "> "; color: #65ffa4; }
+body[data-theme="cyber"] .intro__label,
+body[data-theme="cyber"] .question__category { color: #65ffa4; text-shadow: 0 0 14px rgba(101,255,164,.35); }
+body[data-theme="cyber"] .intro__label::before,
+body[data-theme="cyber"] .question__category::before { content: "[ "; color: #ffb44a; }
+body[data-theme="cyber"] .intro__label::after,
+body[data-theme="cyber"] .question__category::after { content: " ]"; color: #ffb44a; }
+body[data-theme="cyber"] .privacy-note { border-left: 3px solid #65ffa4; box-shadow: inset 16px 0 30px rgba(101,255,164,.025); }
+body[data-theme="cyber"] .privacy-note__dot { box-shadow: 0 0 12px #65ffa4; animation: cyber-blink 1.4s steps(2,end) infinite; }
+body[data-theme="cyber"] .button { text-transform: uppercase; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .02em; clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px)); }
+body[data-theme="cyber"] .button--primary { box-shadow: 0 0 24px rgba(101,255,164,.12); }
+body[data-theme="cyber"] .button--primary:hover { box-shadow: 0 0 32px rgba(101,255,164,.28); }
+body[data-theme="cyber"] .button--ghost { color: #ff9c9c; border-color: #b84545; }
+body[data-theme="cyber"] .progress { height: 4px; border: 1px solid #194830; background: #050a07; overflow: visible; }
+body[data-theme="cyber"] .progress span { position: relative; box-shadow: 0 0 12px rgba(101,255,164,.7); }
+body[data-theme="cyber"] .progress span::after { content: ""; position: absolute; right: -3px; top: -3px; width: 8px; height: 8px; background: #d9ffe9; box-shadow: 0 0 14px #65ffa4; }
+body[data-theme="cyber"] .ledger { gap: 8px; border: 0; background: transparent; }
+body[data-theme="cyber"] .ledger div { border: 1px solid #194830; background: rgba(5,16,10,.88); box-shadow: inset 0 -12px 30px rgba(101,255,164,.025); }
+body[data-theme="cyber"] .ledger dd { color: #65ffa4; text-shadow: 0 0 10px rgba(101,255,164,.28); animation: cyber-number 260ms steps(2,end) both; }
+body[data-theme="cyber"] .cost-list { padding-left: 10px; border-left: 1px solid #194830; }
+body[data-theme="cyber"] .cost-list li::before { content: "> "; color: #ffb44a; }
+body[data-theme="cyber"] .pass-overlay { color: #d9ffe9; background: rgba(1,8,5,.98); animation: cyber-pass 600ms steps(4,end) both; }
+body[data-theme="cyber"] .pass-overlay::before { content: "CLEARANCE GRANTED"; position: absolute; top: 10%; color: #65ffa4; font: 700 10px/1 ui-monospace, monospace; letter-spacing: .35em; }
+body[data-theme="cyber"] .pass-overlay__scan { position: absolute; inset: -20% 0 auto; height: 22%; background: linear-gradient(transparent, rgba(101,255,164,.28), transparent); box-shadow: 0 0 40px rgba(101,255,164,.18); animation: cyber-scan 600ms linear both; }
+body[data-theme="cyber"] .pass-overlay__code { color: #65ffa4; font: 800 clamp(58px, 11vw, 120px)/.9 ui-monospace, monospace; letter-spacing: -.09em; text-shadow: 0 0 25px rgba(101,255,164,.48); }
+body[data-theme="cyber"] .pass-overlay small { color: #78a98d; }
+body[data-theme="cyber"] .result__stamp { border: 1px solid #65ffa4; color: #65ffa4; background: rgba(101,255,164,.06); box-shadow: inset 0 0 16px rgba(101,255,164,.08), 0 0 18px rgba(101,255,164,.1); }
+body[data-theme="cyber"] .result__notice { border-color: #194830; }
+
+@keyframes cyber-blink { 50% { opacity: .25; } }
+@keyframes cyber-number { 0% { opacity: .15; transform: translateX(4px); } 100% { opacity: 1; transform: none; } }
+@keyframes cyber-scan { from { transform: translateY(0); } to { transform: translateY(650%); } }
+@keyframes cyber-pass {
+  0% { opacity: 0; filter: brightness(2); }
+  12%, 25% { opacity: 1; transform: translateX(3px); }
+  32% { transform: translateX(-2px); }
+  42%, 82% { opacity: 1; transform: none; }
+  100% { opacity: 0; filter: brightness(.7); }
+}
+
+@media (max-width: 600px) {
+  body[data-theme="cyber"] .pass-overlay { margin: -18px -20px -24px; }
+  body[data-theme="cyber"] .ledger { gap: 4px; }
+}

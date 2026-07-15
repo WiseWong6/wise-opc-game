@@ -1,0 +1,66 @@
+:root { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif; color: #f3f2ed; background: #101110; font-synthesis: none; }
+* { box-sizing: border-box; }
+html, body { min-width: 320px; min-height: 100%; margin: 0; }
+body { background: radial-gradient(circle at 50% -20%, #30332e, transparent 46%), #101110; }
+.hub { width: min(1320px, 100%); min-height: 100vh; margin: 0 auto; padding: 52px clamp(22px, 5vw, 76px) 28px; }
+.hub__header { display: grid; grid-template-columns: 1.4fr .6fr; column-gap: 60px; align-items: end; padding-bottom: 42px; border-bottom: 1px solid #454640; }
+.eyebrow { grid-column: 1 / -1; margin: 0 0 26px; color: #aaa99f; font: 700 11px/1 ui-monospace, monospace; letter-spacing: .14em; }
+.hub h1 { margin: 0; font-size: clamp(48px, 7.3vw, 104px); line-height: .95; letter-spacing: -.075em; }
+.hub__intro { max-width: 380px; color: #bcbbb2; font-size: 15px; line-height: 1.65; }
+.privacy-pill { display: flex; gap: 9px; align-items: center; margin-top: 18px; font: 650 11px/1.4 ui-monospace, monospace; }
+.privacy-pill span { width: 8px; height: 8px; border-radius: 50%; background: #66ffa4; box-shadow: 0 0 12px rgba(102,255,164,.5); }
+.editions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding: 26px 0; }
+.edition { display: flex; flex-direction: column; min-width: 0; color: inherit; background: #1a1b19; text-decoration: none; border: 1px solid #3d3e39; transition: transform 180ms ease, border-color 180ms ease; }
+.edition:hover { transform: translateY(-6px); border-color: #8e9086; }
+.edition:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
+.edition__preview { position: relative; height: 290px; padding: 24px; overflow: hidden; }
+.edition__copy { display: flex; flex: 1; flex-direction: column; padding: 24px; border-top: 1px solid #3d3e39; }
+.edition__copy > span { color: #8f9088; font: 700 10px/1 ui-monospace, monospace; letter-spacing: .12em; }
+.edition__copy h2 { margin: 15px 0 10px; font-size: 24px; line-height: 1.12; letter-spacing: -.04em; }
+.edition__copy p { margin: 0 0 24px; color: #aaa99f; font-size: 13px; line-height: 1.7; }
+.edition__copy b { margin-top: auto; font-size: 13px; }
+.edition--minimal .edition__preview { color: #121212; background: #f1f0ec; }
+.mini-top { display: flex; justify-content: space-between; padding-bottom: 14px; border-bottom: 1px solid #111; font: 700 9px/1 ui-monospace, monospace; }
+.mini-progress { height: 4px; margin: 22px 0 34px; background: #d3d2cd; }
+.mini-progress i { display: block; width: 32%; height: 100%; background: #111; }
+.edition--minimal .edition__preview strong { font-size: 35px; line-height: .98; letter-spacing: -.065em; }
+.mini-actions { position: absolute; inset: auto 24px 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.mini-actions i { height: 36px; border: 1px solid #111; }
+.mini-actions i:first-child { background: #111; }
+.edition--paper .edition__preview { color: #3c2b20; background: repeating-linear-gradient(0deg, transparent 0 26px, rgba(77,55,39,.08) 27px), #f0e2c7; }
+.edition--paper .edition__preview::before { content: ""; position: absolute; inset: 0 0 auto; height: 10px; background: radial-gradient(circle at 6px -1px, #1a1b19 6px, transparent 6.5px) 0 0 / 16px 10px repeat-x; }
+.paper-no { margin: 4px 0 20px; color: #9d2c21; font: 700 9px/1 ui-monospace, monospace; text-align: right; }
+.edition--paper .edition__preview > strong { font: 900 36px/1 Georgia, "Songti SC", serif; }
+.edition--paper dl { display: grid; grid-template-columns: 1fr 1fr; margin-top: 30px; border: 2px solid #3c2b20; }
+.edition--paper dl div { padding: 12px; }
+.edition--paper dl div + div { border-left: 1px dashed #3c2b20; }
+.edition--paper dt { font-size: 9px; }
+.edition--paper dd { margin: 6px 0 0; font: 800 15px/1 ui-monospace, monospace; }
+.paper-stamp { position: absolute; right: 26px; bottom: 26px; display: grid; place-items: center; width: 92px; height: 92px; border: 7px double #9d2c21; border-radius: 50%; color: #9d2c21; font: 900 19px/1 "Songti SC", serif; letter-spacing: .12em; transform: rotate(-10deg); }
+.edition--cyber .edition__preview { color: #d9ffe9; background: linear-gradient(rgba(101,255,164,.04) 1px, transparent 1px), #030806; background-size: 100% 5px; font-family: ui-monospace, monospace; }
+.edition--cyber .edition__preview::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(101,255,164,.08), transparent); transform: translateX(-70%); }
+.cyber-status { color: #ffb44a; font-size: 9px; letter-spacing: .12em; }
+.edition--cyber .edition__preview strong { display: block; margin-top: 42px; color: #65ffa4; font-size: 30px; line-height: 1.12; letter-spacing: -.06em; text-shadow: 0 0 18px rgba(101,255,164,.4); }
+.cyber-data { display: flex; justify-content: space-between; margin-top: 42px; padding: 10px; border: 1px solid #194830; font-size: 10px; }
+.cyber-data b { color: #65ffa4; }
+.cyber-line { height: 3px; margin-top: 18px; background: #194830; }
+.cyber-line::before { content: ""; display: block; width: 68%; height: 100%; background: #65ffa4; box-shadow: 0 0 12px #65ffa4; }
+footer { display: flex; justify-content: space-between; color: #777870; font: 650 10px/1.4 ui-monospace, monospace; letter-spacing: .06em; }
+
+@media (max-width: 920px) {
+  .hub__header { grid-template-columns: 1fr; }
+  .hub__intro { margin-top: 26px; }
+  .editions { grid-template-columns: 1fr; }
+  .edition { display: grid; grid-template-columns: minmax(260px, .8fr) 1.2fr; }
+  .edition__copy { border-top: 0; border-left: 1px solid #3d3e39; }
+}
+@media (max-width: 620px) {
+  .hub { padding-top: 30px; }
+  .hub__header { padding-bottom: 30px; }
+  .hub h1 { font-size: 48px; }
+  .edition { display: flex; }
+  .edition__preview { height: 240px; }
+  .edition__copy { border-left: 0; border-top: 1px solid #3d3e39; }
+  footer { gap: 12px; flex-direction: column; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
