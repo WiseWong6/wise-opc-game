@@ -1,0 +1,83 @@
+<view class="page-shell">
+  <view class="topbar">
+    <text>OPC / SURVIVAL</text>
+    <text wx:if="{{screen === 'intro'}}">准备开始</text>
+    <text wx:elif="{{screen === 'challenge'}}">{{spectator ? '围观中' : '正在闯关'}}</text>
+    <text wx:else>结果已锁定</text>
+  </view>
+
+  <view wx:if="{{screen === 'intro'}}" class="intro">
+    <text class="eyebrow">一人公司生存模拟器 · 极简版</text>
+    <view class="hero-title">
+      <view>你想做一人公司。</view>
+      <view>它也想做你。</view>
+    </view>
+    <text class="lead">12 个问题，约 4 分钟。每次继续都会记上一笔；任何一关都可以体面离场。</text>
+    <view class="privacy-note">
+      <view class="privacy-dot"></view>
+      <text><text class="strong">零数据模式：</text>不登录、不联网提交、不使用本地存储。退出小程序后，所有答案立即消失。</text>
+    </view>
+    <button class="button primary wide" bindtap="start">开始承担</button>
+    <text class="fine-print">娱乐化个人经验，不构成法律、财税或安全建议。成本采用用户提供及文章历史口径，仍需逐项复核。</text>
+  </view>
+
+  <view wx:elif="{{screen === 'challenge'}}" class="challenge">
+    <view class="progress-row">
+      <text>{{spectator ? '围观模式 · 不计分' : '第 ' + challenge.stage + ' 关'}}</text>
+      <text>{{progressText}}</text>
+    </view>
+    <view class="progress"><view class="progress-fill" style="width: {{progressPercent}}%;"></view></view>
+
+    <view class="ledger">
+      <view class="ledger-cell"><text>已列成本</text><text class="ledger-value">{{ledgerCash}}</text></view>
+      <view class="ledger-cell"><text>时间</text><text class="ledger-value">{{ledgerTime}}</text></view>
+      <view class="ledger-cell"><text>风险</text><text class="ledger-value">{{ledgerRisk}}</text></view>
+    </view>
+
+    <view class="question">
+      <text class="eyebrow muted">{{challenge.category}} / {{challenge.title}}</text>
+      <view class="question-title">{{challenge.question}}</view>
+      <text class="cost-summary">{{spectator ? '本关原账单：' : ''}}{{challenge.costText}}</text>
+      <view class="cost-list">
+        <text wx:for="{{challenge.costItems}}" wx:key="*this">— {{item}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{!spectator}}" class="actions">
+      <button class="button primary" disabled="{{busy}}" bindtap="accept">{{challenge.acceptLabel}}</button>
+      <button class="button ghost" disabled="{{busy}}" bindtap="quit">{{challenge.quitLabel}}</button>
+      <button wx:if="{{challenge.stage > 1}}" class="back-button" disabled="{{busy}}" bindtap="back">← 返回上一关重选</button>
+    </view>
+    <view wx:else class="actions">
+      <button class="button primary wide" bindtap="spectatorNext">{{challenge.stage === 12 ? '看完，回到账单' : '看看下一关'}}</button>
+      <text class="spectator-note">你的结局与三本账已经冻结，后续只看热闹，不再增加任何分数。</text>
+    </view>
+
+    <view wx:if="{{transitionVisible}}" class="pass-overlay">
+      <text class="pass-code">PASS {{challenge.stage}}</text>
+      <text class="pass-receipt">{{transitionReceipt}}</text>
+      <text class="pass-cost">{{transitionCost}}</text>
+    </view>
+  </view>
+
+  <view wx:else class="result">
+    <text class="result-stamp">{{resultStamp}}</text>
+    <text class="result-meta">{{resultMeta}}</text>
+    <view class="result-title">{{resultTitle}}</view>
+    <text class="result-conclusion">{{resultConclusion}}</text>
+    <view class="ledger result-ledger">
+      <view class="ledger-cell"><text>已列成本</text><text class="ledger-value">{{ledgerCash}}</text></view>
+      <view class="ledger-cell"><text>时间</text><text class="ledger-value">{{ledgerTime}}</text></view>
+      <view class="ledger-cell"><text>风险</text><text class="ledger-value">{{ledgerRisk}}</text></view>
+    </view>
+    <view class="result-notice">
+      <text class="strong">这就是全部结果。</text>
+      <text>没有人格标签，没有伪精确百分制，也没有上传到任何服务器。</text>
+    </view>
+    <view class="actions">
+      <button wx:if="{{canSpectate}}" class="button primary" bindtap="spectate">不计分，围观后续难关</button>
+      <button class="button {{canSpectate ? 'ghost' : 'primary'}}" bindtap="restart">重新开始并清零</button>
+    </view>
+    <text class="fine-print">题目用于娱乐和自查。现实要求因地区、主体、产品形态与时间而不同，请以主管部门和专业人士意见为准。</text>
+  </view>
+</view>

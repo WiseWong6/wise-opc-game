@@ -1,0 +1,9 @@
+.DS_Store
+node_modules/
+dist/
+web/dist/
+coverage/
+output/
+research/
+project.private.config.json
+*.log
