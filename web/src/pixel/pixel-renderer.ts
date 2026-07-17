@@ -187,6 +187,17 @@ function progressMarkup(question: QuizQuestion, count: number): string {
   `
 }
 
+function costCheckpointProgressMarkup(questionCount: number): string {
+  const completedQuestions = Math.max(questionCount - 1, 0)
+  const percent = questionCount > 0 ? Math.round((completedQuestions / questionCount) * 100) : 0
+  return `
+    <div class="pixel-progress" data-pixel-status-rail aria-label="成本确认，已完成 ${completedQuestions} / ${questionCount} 题">
+      <span>成本确认 · ${completedQuestions} / ${questionCount}</span>
+      <div class="pixel-progress__track"><i style="width:${percent}%"></i></div>
+    </div>
+  `
+}
+
 function optionFeedbackMarkup(transition: PixelTransition, overlay?: OptionVisualOverlay): string {
   const tone = overlay?.tone && ['brand', 'success', 'warning'].includes(overlay.tone)
     ? overlay.tone
@@ -329,6 +340,88 @@ export function renderPixelQuestion(
         <p class="pixel-dossier__eyebrow">${escapeHtml(visual.chapterLabel)} / ${escapeHtml(visual.sceneId)}</p>
         <h1>${escapeHtml(interpolateText(question.prompt, gameState))}</h1>
         <div class="pixel-dossier__controls">${optionsMarkup(question, gameState)}</div>
+      </section>
+    </div>
+  `
+}
+
+export function renderPixelCostCheckpoint(gameState: QuizState, quiz: QuizDefinition): string {
+  const pricingQuestion = quiz.questions.find((question) => question.id === 'Q24')
+  if (!pricingQuestion) return renderPixelQuestion(gameState, quiz, null)
+
+  const selectedPriceOptionId = [...gameState.history]
+    .reverse()
+    .find((answer) => answer.questionId === pricingQuestion.id)?.optionId
+  const visual = resolvePixelVisual(pricingQuestion, selectedPriceOptionId)
+  const users = Number(gameState.metrics.users)
+  const monthlyPrice = Number(gameState.metrics.monthlyPriceCny)
+  const safeUsers = Number.isFinite(users) ? users : 0
+  const safeMonthlyPrice = Number.isFinite(monthlyPrice) ? monthlyPrice : 0
+  const theoreticalMonthlyRevenue = safeUsers * safeMonthlyPrice
+  const monthlyFixedCost = gameState.ledger.costs.firstYearCommitted.totalCny / 12
+  const monthlyDifference = theoreticalMonthlyRevenue - monthlyFixedCost
+  const hasUnpricedFixedCosts = gameState.ledger.costs.firstYearCommitted.hasUnknownAmount
+  const formattedUsers = new Intl.NumberFormat('zh-CN').format(safeUsers)
+  const formattedPrice = formatCurrency(safeMonthlyPrice)
+  const formattedRevenue = formatCurrency(theoreticalMonthlyRevenue)
+  const formattedMonthlyCost = formatCurrency(monthlyFixedCost)
+  const formattedDifference = `${monthlyDifference >= 0 ? '+' : '−'}${formatCurrency(Math.abs(monthlyDifference))}`
+  const differenceTone = monthlyDifference >= 0 ? 'positive' : 'negative'
+  const optionVisual = visual.source === 'option' && visual.optionId
+    ? { optionId: visual.optionId, overlay: visual.overlay, variant: visual.optionVariant ?? {} }
+    : undefined
+  const costBoard = `
+    <div class="pixel-cost-board" data-pixel-cost-board role="status" aria-label="成本试算：${formattedUsers} 个用户，每位每月 ${formattedPrice}，理论月收入 ${formattedRevenue}，当前月固定成本约 ${formattedMonthlyCost}">
+      <header><span>MONTHLY COST CHECK</span><strong>本月成本试算</strong></header>
+      <div class="pixel-cost-board__grid">
+        <div><span>预计用户</span><strong>${escapeHtml(formattedUsers)}</strong></div>
+        <div><span>用户月费</span><strong>${escapeHtml(formattedPrice)}</strong></div>
+        <div><span>理论月收入</span><strong>${escapeHtml(formattedRevenue)}</strong></div>
+        <div><span>当前月固定成本</span><strong>${escapeHtml(formattedMonthlyCost)}${hasUnpricedFixedCosts ? '<small> + 待确认</small>' : ''}</strong></div>
+      </div>
+      <p class="pixel-cost-board__difference pixel-cost-board__difference--${differenceTone}">
+        <span>理论月度差额</span><strong>${escapeHtml(formattedDifference)}</strong>
+      </p>
+    </div>
+  `
+
+  return `
+    <div class="pixel-layout pixel-layout--challenge pixel-layout--cost-checkpoint" data-pixel-cost-checkpoint>
+      ${pixelLedgerMarkup(gameState)}
+      ${costCheckpointProgressMarkup(quiz.questions.length)}
+      ${stageMarkup(
+        sceneMarkup(
+          'question',
+          'resolved',
+          visual.sceneId,
+          visual.desktopAsset,
+          visual.mobileAsset,
+          false,
+          optionVisual,
+        ),
+        costBoard,
+        'pixel-stage--question pixel-stage--cost-check',
+      )}
+      <section class="pixel-dossier pixel-dossier--question pixel-cost-check" aria-labelledby="pixel-cost-check-title">
+        <i class="pixel-dossier__clip" aria-hidden="true"></i>
+        <p class="pixel-dossier__eyebrow">business / COST-CHECK</p>
+        <h1 id="pixel-cost-check-title">预计 ${escapeHtml(formattedUsers)} 个用户，每位每月 ${escapeHtml(formattedPrice)}。你现在每月约支付 ${escapeHtml(formattedMonthlyCost)}，确定继续吗？</h1>
+        <p class="pixel-cost-check__note">月成本按首年固定成本 ÷ 12 粗算；不含模型用量、支付手续费、税费和获客等浮动成本。</p>
+        <div class="pixel-dossier__controls">
+          <div class="pixel-choice-list" role="group" aria-label="成本确认选项">
+            <button class="pixel-choice-card" type="button" data-action="confirm-cost-check">
+              <span class="pixel-choice-card__key" aria-hidden="true">1</span>
+              <strong>继续，去找第一百个用户</strong>
+            </button>
+            <button class="pixel-choice-card" type="button" data-action="recalculate-cost-check">
+              <span class="pixel-choice-card__key" aria-hidden="true">2</span>
+              <strong>返回重选价格</strong>
+            </button>
+          </div>
+          <div class="secondary-row">
+            <span>键盘：1 继续 · 2 重算</span>
+          </div>
+        </div>
       </section>
     </div>
   `
