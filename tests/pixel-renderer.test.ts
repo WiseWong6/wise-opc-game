@@ -312,6 +312,8 @@ test('完成路线结果页把核心结算叠在 Q25 resolved 图上，并提供
   assert.match(markup, /¥990/)
   assert.match(markup, /pixel-stage--result/)
   assert.match(markup, /pixel-result-panel" data-pixel-achievement/)
+  assert.match(markup, /闯过 \d+ 关/)
+  assert.doesNotMatch(markup, /像素荣誉证书|答完 \d+ 题/)
   assert.match(markup, /pixel-score-medallion/)
   assert.match(markup, /pixel-score-medallion--digits-[123]/)
   assert.match(markup, /class="pixel-score-medallion__motion"/)
