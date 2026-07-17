@@ -402,7 +402,7 @@ export function renderPixelResult(gameState: QuizState, quiz: QuizDefinition): s
         </div>
         <div class="pixel-certificate__identity">
           <div class="pixel-result-stamp">${completed ? '正式上线' : '到此为止'}</div>
-          <p class="pixel-dossier__eyebrow">像素荣誉证书 · 答完 ${result.answeredCount} 题</p>
+          <p class="pixel-dossier__eyebrow">闯过 ${result.answeredCount} 关</p>
           <h1 id="pixel-result-title">${escapeHtml(result.title)}</h1>
         </div>
       </header>
