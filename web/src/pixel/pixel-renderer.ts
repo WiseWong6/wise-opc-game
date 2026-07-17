@@ -262,7 +262,7 @@ function moneyRainMarkup(transition: PixelTransition | null): string {
   }).join('')}</div>`
 }
 
-export function renderPixelIntro(gameState: QuizState, questionCount = 25): string {
+export function renderPixelIntro(gameState: QuizState): string {
   return `
     <div class="pixel-layout pixel-layout--intro">
       ${pixelLedgerMarkup(gameState)}
@@ -271,11 +271,6 @@ export function renderPixelIntro(gameState: QuizState, questionCount = 25): stri
         <i class="pixel-dossier__clip" aria-hidden="true"></i>
         <p class="pixel-dossier__eyebrow">A001 · 一人公司生存申请</p>
         <h1>一人公司<br /><em>生存模拟器</em></h1>
-        <p class="pixel-dossier__lead">${questionCount} 个场景。你做出的每个选择，都会改变现金、时间、待办与最终称号。</p>
-        <div class="pixel-privacy">
-          <span aria-hidden="true"></span>
-          <p><strong>零数据模式</strong>：不登录、不提交、不使用 Cookie 或本地存储。刷新后立即清零。</p>
-        </div>
         <button class="button button--primary button--wide" data-action="start">进入办事大厅</button>
         <div class="pixel-dossier__footer">
           <small>娱乐化个人经验，不构成法律、财税或安全建议。</small>
@@ -385,7 +380,7 @@ function businessProjectionMarkup(gameState: QuizState): string {
 
 export function renderPixelResult(gameState: QuizState, quiz: QuizDefinition): string {
   const result = gameState.result
-  if (!result) return renderPixelIntro(gameState, quiz.questions.length)
+  if (!result) return renderPixelIntro(gameState)
   const resultQuestionId = result.outcome === 'completed' ? 'Q25' : result.stoppedAtQuestionId
   const question = quiz.questions.find((candidate) => candidate.id === resultQuestionId) ?? quiz.questions.at(-1)
   if (!question) return ''

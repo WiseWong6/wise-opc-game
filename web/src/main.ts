@@ -152,7 +152,7 @@ function shell(content: string, stateLabel: string): string {
 }
 
 function renderIntro(): string {
-  if (themeName === 'pixel') return shell(renderPixelIntro(state, quiz.questions.length), '准备开始')
+  if (themeName === 'pixel') return shell(renderPixelIntro(state), '准备开始')
   return shell(`
     <div class="intro">
       <div class="intro__label">一人公司生存模拟器 · ${escapeHtml(theme.edition)}</div>

@@ -14,14 +14,14 @@ import {
 
 const quiz = quizData as unknown as QuizDefinition
 
-test('像素版首页包含四格大厅、动态 25 题与零数据说明', () => {
+test('像素版首页保留四格大厅与开始入口，不显示冗余说明', () => {
   const state = restartGame(quiz)
-  const markup = renderPixelIntro(state, quiz.questions.length)
+  const markup = renderPixelIntro(state)
   assert.match(markup, /data-pixel-hud/)
   assert.match(markup, /data-pixel-scene="intro"/)
   assert.match(markup, /stage-00\.webp/)
-  assert.match(markup, /零数据模式/)
-  assert.match(markup, /25 个场景/)
+  assert.doesNotMatch(markup, /零数据模式/)
+  assert.doesNotMatch(markup, /25 个场景/)
   assert.match(markup, /data-action="start"/)
 })
 
