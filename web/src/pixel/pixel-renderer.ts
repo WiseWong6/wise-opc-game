@@ -389,12 +389,16 @@ export function renderPixelResult(gameState: QuizState, quiz: QuizDefinition): s
     ? [...gameState.history].reverse().find((answer) => answer.questionId === question.id)?.optionId
     : undefined
   const visual = resolvePixelVisual(question, completedOptionId)
+  const scoreDigits = Math.min(String(Math.abs(result.score.total)).length, 3)
   const resultPanel = `
     <section class="pixel-result-panel" data-pixel-achievement aria-labelledby="pixel-result-title">
       <header class="pixel-certificate__hero">
-        <div class="pixel-score-medallion" aria-label="总分 ${result.score.total} 分">
-          <img src="/assets/pixel/motion/achievement-reveal.webp" alt="" width="256" height="256" aria-hidden="true" />
-          <span><strong>${result.score.total}</strong><small>/ 100</small></span>
+        <div class="pixel-score-medallion pixel-score-medallion--digits-${scoreDigits}" aria-label="总分 ${result.score.total} 分">
+          <img class="pixel-score-medallion__motion" src="/assets/pixel/motion/achievement-reveal.webp" alt="" width="256" height="256" aria-hidden="true" />
+          <span class="pixel-score-medallion__disc" aria-hidden="true">
+            <strong data-pixel-score>${result.score.total}</strong>
+            <small>/ 100</small>
+          </span>
         </div>
         <div class="pixel-certificate__identity">
           <div class="pixel-result-stamp">${completed ? '正式上线' : '到此为止'}</div>
