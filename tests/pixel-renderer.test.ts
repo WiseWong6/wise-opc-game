@@ -251,6 +251,42 @@ test('Q5 普通选择保持题目进度栏，并在账本格闪烁与舞台安�
   assert.doesNotMatch(markup, /路线已重算/)
 })
 
+test('Q3 选择 200 美元方案后像素账本立即计入年费，到 Q10 后由真实方案接管且不重复', () => {
+  let state = restartGame(quiz)
+  for (const optionId of ['launch', 'login']) state = chooseOption(quiz, state, optionId)
+  assert.equal(state.currentQuestionId, 'Q03')
+  const question = quiz.questions.find((candidate) => candidate.id === 'Q03')
+  const option = question?.options.find((candidate) => candidate.id === 'profit')
+  assert.ok(option)
+
+  const afterProfit = chooseOption(quiz, state, option.id)
+  assert.equal(afterProfit.ledger.costs.firstYearCommitted.totalCny, 0, '共享题库账本不得被像素版临时成本污染')
+  const transitionMarkup = renderPixelQuestion(state, quiz, {
+    optionId: option.id,
+    optionLabel: option.label,
+    outcome: 'resolved',
+    nextState: afterProfit,
+  })
+  assert.match(transitionMarkup, /¥16,298\.16/)
+  assert.match(transitionMarkup, /¥1\.63万/)
+  assert.match(transitionMarkup, /pixel-hud__cell--fixed pixel-hud__cell--changed/)
+
+  state = afterProfit
+  for (const optionId of [
+    'found-company',
+    'register',
+    'desk',
+    'open-bank-account',
+    'wechat-pay',
+    'agency-bookkeeping',
+  ]) state = chooseOption(quiz, state, optionId)
+  assert.equal(state.currentQuestionId, 'Q10')
+  state = chooseOption(quiz, state, 'gpt-ultra')
+  const afterQ10Markup = renderPixelQuestion(state, quiz, null)
+  assert.doesNotMatch(afterQ10Markup, /¥32,596\.32/, 'Q10 真实方案接管后不得把 Q3 临时成本再算一次')
+  assert.doesNotMatch(afterQ10Markup, /¥3\.26万/)
+})
+
 test('Q10 选择不同开发 AI 时舞台反馈保留具体选项且不占用进度栏', () => {
   let state = restartGame(quiz)
   for (const optionId of ['launch', 'guest', 'love']) state = chooseOption(quiz, state, optionId)

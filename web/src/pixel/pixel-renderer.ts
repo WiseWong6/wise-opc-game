@@ -59,9 +59,70 @@ function compactCurrency(value: number, hasUnknownAmount: boolean): string {
   return `${formatted}${hasUnknownAmount ? '+待定' : ''}`
 }
 
+const PIXEL_Q03_CODEX_ANNUAL_CNY = 16_298.16
+const PIXEL_Q03_CODEX_FIRST_YEAR_ID = 'pixel-q03-codex-first-year'
+const PIXEL_Q03_CODEX_RENEWAL_ID = 'pixel-q03-codex-renewal'
+
+function pixelAccountingLedger(gameState: QuizState): QuizState['ledger'] {
+  const ledger = gameState.result?.ledger ?? gameState.ledger
+  const selectedCodexPlan = gameState.history.some(
+    (answer) => answer.questionId === 'Q03' && answer.optionId === 'profit',
+  )
+  const codingPlanConfirmed = gameState.history.some((answer) => answer.questionId === 'Q10')
+  const alreadyProjected = ledger.costs.firstYearCommitted.items.some(
+    (item) => item.id === PIXEL_Q03_CODEX_FIRST_YEAR_ID,
+  )
+  if (!selectedCodexPlan || codingPlanConfirmed || alreadyProjected) return ledger
+
+  return {
+    ...ledger,
+    costs: {
+      ...ledger.costs,
+      firstYearCommitted: {
+        ...ledger.costs.firstYearCommitted,
+        totalCny: ledger.costs.firstYearCommitted.totalCny + PIXEL_Q03_CODEX_ANNUAL_CNY,
+        items: [
+          ...ledger.costs.firstYearCommitted.items,
+          {
+            id: PIXEL_Q03_CODEX_FIRST_YEAR_ID,
+            questionId: 'Q03',
+            optionId: 'profit',
+            label: 'Codex Pro 开发会员年化（$200/月）',
+            amount: PIXEL_Q03_CODEX_ANNUAL_CNY,
+            currency: 'CNY',
+            sourceType: '像素版 Q3 选择 + 官方中间价折算',
+            chargeTiming: '按月支付',
+            refundable: true,
+            priceDate: '2026-07-16',
+          },
+        ],
+      },
+      renewal: {
+        ...ledger.costs.renewal,
+        totalCny: ledger.costs.renewal.totalCny + PIXEL_Q03_CODEX_ANNUAL_CNY,
+        items: [
+          ...ledger.costs.renewal.items,
+          {
+            id: PIXEL_Q03_CODEX_RENEWAL_ID,
+            questionId: 'Q03',
+            optionId: 'profit',
+            label: 'Codex Pro 开发会员次年年化（$200/月）',
+            amount: PIXEL_Q03_CODEX_ANNUAL_CNY,
+            currency: 'CNY',
+            sourceType: '像素版 Q3 选择 + 官方中间价折算',
+            chargeTiming: '按月续费',
+            refundable: true,
+            priceDate: '2026-07-16',
+          },
+        ],
+      },
+    },
+  }
+}
+
 function changedHudKinds(beforeState: QuizState, afterState: QuizState): Set<PixelHudKind> {
-  const before = beforeState.result?.ledger ?? beforeState.ledger
-  const after = afterState.result?.ledger ?? afterState.ledger
+  const before = pixelAccountingLedger(beforeState)
+  const after = pixelAccountingLedger(afterState)
   const changed = new Set<PixelHudKind>()
   if (
     before.costs.paidSunk.totalCny !== after.costs.paidSunk.totalCny
@@ -80,7 +141,7 @@ function changedHudKinds(beforeState: QuizState, afterState: QuizState): Set<Pix
 }
 
 function pixelLedgerMarkup(gameState: QuizState, changed = new Set<PixelHudKind>()): string {
-  const rawLedger = gameState.result?.ledger ?? gameState.ledger
+  const rawLedger = pixelAccountingLedger(gameState)
   const ledger = formatLedger(rawLedger)
   const cells = [
     {
@@ -446,7 +507,8 @@ function scoreMarkup(gameState: QuizState): string {
 function costSummaryMarkup(gameState: QuizState): string {
   const result = gameState.result
   if (!result) return ''
-  const formatted = formatLedger(result.ledger)
+  const ledger = pixelAccountingLedger(gameState)
+  const formatted = formatLedger(ledger)
   return `
     <dl class="pixel-result-ledger">
       ${Object.entries(COST_LABELS).map(([key, label]) => `<div><dt>${label}</dt><dd>${escapeHtml(formatted[key as keyof typeof COST_LABELS])}</dd></div>`).join('')}
@@ -468,7 +530,7 @@ interface MonthlyBusinessProjection {
 
 function monthlyBusinessProjection(gameState: QuizState): MonthlyBusinessProjection | null {
   const metrics = gameState.result?.metrics ?? gameState.metrics
-  const ledger = gameState.result?.ledger ?? gameState.ledger
+  const ledger = pixelAccountingLedger(gameState)
   const users = Number(metrics.users)
   const monthlyPrice = Number(metrics.monthlyPriceCny)
   if (!Number.isFinite(users) || !Number.isFinite(monthlyPrice) || monthlyPrice <= 0) return null
