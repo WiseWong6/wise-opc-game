@@ -337,6 +337,8 @@ test('完成路线结果页把核心结算叠在 Q25 resolved 图上，并提供
     assert.ok(guard <= 25)
   }
   const markup = renderPixelResult(state, quiz)
+  const result = state.result
+  assert.ok(result)
   assert.match(markup, /data-pixel-scene="victory"/)
   assert.match(markup, /data-scene-id="Q25"/)
   assert.match(markup, /data-storyboard-frame="resolved"/)
@@ -347,6 +349,17 @@ test('完成路线结果页把核心结算叠在 Q25 resolved 图上，并提供
   assert.equal((markup.match(/<strong>[^<]+ \/ (?:30|25|15)<\/strong>/g) ?? []).length, 4)
   assert.match(markup, /理论月收入/)
   assert.match(markup, /¥990/)
+  const monthlyFixedCost = result.ledger.costs.firstYearCommitted.totalCny / 12
+  const breakEvenUsers = Math.ceil(monthlyFixedCost / Number(result.metrics.monthlyPriceCny))
+  const monthlyDifference = (Number(result.metrics.users) * Number(result.metrics.monthlyPriceCny)) - monthlyFixedCost
+  assert.match(markup, /data-pixel-business-projection/)
+  assert.equal((markup.match(/pixel-business-projection__metric(?:\s|")/g) ?? []).length, 12)
+  assert.match(markup, /已知月成本/)
+  assert.ok(markup.includes(formatCurrency(monthlyFixedCost)))
+  assert.match(markup, /盈亏平衡用户/)
+  assert.ok(markup.includes(`${new Intl.NumberFormat('zh-CN').format(breakEvenUsers)} 人`))
+  assert.match(markup, /盈亏水平/)
+  assert.ok(markup.includes(formatCurrency(Math.abs(monthlyDifference))))
   assert.match(markup, /pixel-stage--result/)
   assert.match(markup, /pixel-result-panel" data-pixel-achievement/)
   assert.match(markup, /闯过 \d+ 关/)

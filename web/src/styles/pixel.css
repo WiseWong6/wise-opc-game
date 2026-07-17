@@ -727,9 +727,12 @@ body[data-theme="pixel"] .edition-link { color: #413a2d; font-weight: 850; }
 .pixel-score-grid i { grid-column: 1 / -1; height: 5px; overflow: hidden; background: #cbbd98; box-shadow: inset 1px 1px #877b60; }
 .pixel-score-grid i b { display: block; height: 100%; background: #a52d24; }
 .pixel-business-projection { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin-top: 10px; background: #a99a74; color: #554c3c; font-size: 9px; }
-.pixel-business-projection div { display: grid; gap: 3px; padding: 7px; background: #efe1bd; }
-.pixel-business-projection strong { color: #8d2f25; }
-.pixel-business-projection small { grid-column: 1 / -1; padding: 6px 7px; background: #efe1bd; line-height: 1.45; }
+.pixel-business-projection > .pixel-business-projection__metric { display: grid; gap: 3px; min-width: 0; padding: 7px; background: #efe1bd; }
+.pixel-business-projection > .pixel-business-projection__metric > strong { color: #8d2f25; line-height: 1.35; }
+.pixel-business-projection > .pixel-business-projection__metric > strong i { color: #6b604d; font-size: 8px; font-style: normal; white-space: nowrap; }
+.pixel-business-projection > .pixel-business-projection__metric--positive > strong { color: #36631d; }
+.pixel-business-projection > .pixel-business-projection__metric--negative > strong { color: #a52d24; }
+.pixel-business-projection > small { grid-column: 1 / -1; padding: 6px 7px; background: #efe1bd; line-height: 1.45; }
 .pixel-result-ledger { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin: 8px 0 0; color: #554c3c; background: #a99a74; font-size: 10px; }
 .pixel-result-ledger div { display: grid; gap: 3px; padding: 7px; background: #efe1bd; }
 .pixel-result-ledger dt { color: #6d624e; }

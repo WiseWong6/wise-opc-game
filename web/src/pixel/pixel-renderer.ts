@@ -456,17 +456,55 @@ function costSummaryMarkup(gameState: QuizState): string {
   `
 }
 
+interface MonthlyBusinessProjection {
+  users: number
+  monthlyPrice: number
+  theoreticalMonthlyRevenue: number
+  monthlyFixedCost: number
+  monthlyDifference: number
+  breakEvenUsers: number
+  hasUnpricedFixedCosts: boolean
+}
+
+function monthlyBusinessProjection(gameState: QuizState): MonthlyBusinessProjection | null {
+  const metrics = gameState.result?.metrics ?? gameState.metrics
+  const ledger = gameState.result?.ledger ?? gameState.ledger
+  const users = Number(metrics.users)
+  const monthlyPrice = Number(metrics.monthlyPriceCny)
+  if (!Number.isFinite(users) || !Number.isFinite(monthlyPrice) || monthlyPrice <= 0) return null
+
+  const theoreticalMonthlyRevenue = users * monthlyPrice
+  const monthlyFixedCost = ledger.costs.firstYearCommitted.totalCny / 12
+  return {
+    users,
+    monthlyPrice,
+    theoreticalMonthlyRevenue,
+    monthlyFixedCost,
+    monthlyDifference: theoreticalMonthlyRevenue - monthlyFixedCost,
+    breakEvenUsers: Math.ceil(monthlyFixedCost / monthlyPrice),
+    hasUnpricedFixedCosts: ledger.costs.firstYearCommitted.hasUnknownAmount,
+  }
+}
+
 function businessProjectionMarkup(gameState: QuizState): string {
-  const metrics = gameState.result?.metrics
-  const users = Number(metrics?.users)
-  const monthlyPrice = Number(metrics?.monthlyPriceCny)
-  if (!Number.isFinite(users) || !Number.isFinite(monthlyPrice)) return ''
+  const projection = monthlyBusinessProjection(gameState)
+  if (!projection) return ''
+  const formattedUsers = new Intl.NumberFormat('zh-CN').format(projection.users)
+  const formattedBreakEvenUsers = new Intl.NumberFormat('zh-CN').format(projection.breakEvenUsers)
+  const differenceTone = projection.monthlyDifference >= 0 ? 'positive' : 'negative'
+  const differenceLabel = projection.monthlyDifference >= 0 ? '盈余' : '缺口'
+  const formattedDifference = `${projection.monthlyDifference >= 0 ? '+' : '−'}${formatCurrency(Math.abs(projection.monthlyDifference))}`
+  const unpricedNote = projection.hasUnpricedFixedCosts ? '<i>+待确认</i>' : ''
+  const breakEvenPrefix = projection.hasUnpricedFixedCosts ? '≥' : ''
   return `
-    <div class="pixel-business-projection" aria-label="商业化粗算">
-      <div><span>目标用户</span><strong>${new Intl.NumberFormat('zh-CN').format(users)}</strong></div>
-      <div><span>每用户月费</span><strong>${escapeHtml(formatCurrency(monthlyPrice))}</strong></div>
-      <div><span>理论月收入</span><strong>${escapeHtml(formatCurrency(users * monthlyPrice))}</strong></div>
-      <small>用户数 × 月费，未扣流失、渠道、税费和变动成本。</small>
+    <div class="pixel-business-projection" data-pixel-business-projection aria-label="商业化粗算：已知月成本 ${escapeHtml(formatCurrency(projection.monthlyFixedCost))}，盈亏平衡至少需要 ${escapeHtml(formattedBreakEvenUsers)} 个付费用户，当前${differenceLabel} ${escapeHtml(formattedDifference)}">
+      <div class="pixel-business-projection__metric"><span>目标用户</span><strong>${escapeHtml(formattedUsers)}</strong></div>
+      <div class="pixel-business-projection__metric"><span>每用户月费</span><strong>${escapeHtml(formatCurrency(projection.monthlyPrice))}</strong></div>
+      <div class="pixel-business-projection__metric"><span>理论月收入</span><strong>${escapeHtml(formatCurrency(projection.theoreticalMonthlyRevenue))}</strong></div>
+      <div class="pixel-business-projection__metric"><span>已知月成本</span><strong>${escapeHtml(formatCurrency(projection.monthlyFixedCost))}${unpricedNote}</strong></div>
+      <div class="pixel-business-projection__metric"><span>盈亏平衡用户</span><strong>${breakEvenPrefix}${escapeHtml(formattedBreakEvenUsers)} 人</strong></div>
+      <div class="pixel-business-projection__metric pixel-business-projection__metric--${differenceTone}"><span>盈亏水平</span><strong>${differenceLabel} ${escapeHtml(formattedDifference)}</strong></div>
+      <small>月成本＝首年固定成本 ÷ 12；盈亏平衡按已知月成本 ÷ 月费粗算，未扣模型用量、支付手续费、税费、获客和流失。</small>
     </div>
   `
 }
