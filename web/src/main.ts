@@ -390,6 +390,14 @@ function selectOption(optionId: string): void {
 
 function handleAction(action: string): void {
   if (transition) return
+  if (action === 'open-result-details') {
+    app.querySelector<HTMLDialogElement>('[data-result-dialog]')?.showModal()
+    return
+  }
+  if (action === 'close-result-details') {
+    app.querySelector<HTMLDialogElement>('[data-result-dialog]')?.close()
+    return
+  }
   if (action === 'start') {
     started = true
     state = restartGame(quiz)
