@@ -234,15 +234,15 @@
         "file": "web/public/assets/pixel/scenes-v2/Q03-desktop.webp",
         "width": 1536,
         "height": 1024,
-        "bytes": 360186,
-        "sha256": "fb7c2235fd085752248964ef9290277490bfe9af272f7cf445dba6a8abb7e8c0"
+        "bytes": 410544,
+        "sha256": "c892ee50068d04f88fc673725907c4ab73f48ac20df3da29b871aa7b283a5079"
       },
       "mobile": {
         "file": "web/public/assets/pixel/scenes-v2/Q03-mobile.webp",
         "width": 1024,
         "height": 1536,
-        "bytes": 357030,
-        "sha256": "54848be5e9841417033b9f751b9252dc1464a6c280ea221d7facfdda5a4fa091"
+        "bytes": 415472,
+        "sha256": "347a938437d2691d8f505efd76a993b9dc4e6e162d8afc431cc841339264e025"
       },
       "optionVariants": {
         "profit": {
@@ -454,15 +454,15 @@
         "file": "web/public/assets/pixel/scenes-v2/Q06-desktop.webp",
         "width": 1536,
         "height": 1024,
-        "bytes": 284170,
-        "sha256": "01ac01afe141145a45530d4a7d311202579112628f8bc95a0ac64fd445aca824"
+        "bytes": 296976,
+        "sha256": "e15d930381a08e7fc182cad1ac42fc568a7381847d0c400cf8d3bd87a27cbf5b"
       },
       "mobile": {
         "file": "web/public/assets/pixel/scenes-v2/Q06-mobile.webp",
         "width": 1024,
         "height": 1536,
-        "bytes": 370018,
-        "sha256": "7f27b26303f417002afc9d2d89a9fb99083b734bf1af35535fa18bbd3cf9b668"
+        "bytes": 385994,
+        "sha256": "fcc78d6de036e2e29358d1dce312153907a9a9c076f34bd6712e0e4f78494075"
       },
       "optionVariants": {
         "desk": {
