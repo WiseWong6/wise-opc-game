@@ -3,10 +3,12 @@ import test from 'node:test'
 import quizData from '../content/quiz-v2.json'
 import {
   chooseOption,
+  formatCurrency,
   restartGame,
   type QuizDefinition,
 } from '../packages/game-core/src/index.ts'
 import {
+  renderPixelCostCheckpoint,
   renderPixelIntro,
   renderPixelQuestion,
   renderPixelResult,
@@ -64,6 +66,41 @@ test('Q24 不再把预计用户公式叠加到图片左上角', () => {
   assert.doesNotMatch(markup, /10,000 位预计用户 × 月费/)
   assert.doesNotMatch(markup, /用户数来自上一题 · 理论月流水 ≠ 利润/)
   assert.doesNotMatch(markup, /data-pixel-scene-guide/)
+})
+
+test('像素版 Q24 选择后显示动态成本确认关，再进入原 Q25', () => {
+  let state = restartGame(quiz)
+  let guard = 0
+  while (state.phase === 'playing' && state.currentQuestionId !== 'Q23') {
+    const question = quiz.questions.find((candidate) => candidate.id === state.currentQuestionId)
+    const option = question?.options.find((candidate) => candidate.outcome !== 'exit')
+    assert.ok(option)
+    state = chooseOption(quiz, state, option.id)
+    guard += 1
+    assert.ok(guard <= 25)
+  }
+  state = chooseOption(quiz, state, 'users-1000')
+  assert.equal(state.currentQuestionId, 'Q24')
+  state = chooseOption(quiz, state, 'price-19-9')
+  assert.equal(state.currentQuestionId, 'Q25')
+
+  const monthlyFixedCost = state.ledger.costs.firstYearCommitted.totalCny / 12
+  const markup = renderPixelCostCheckpoint(state, quiz)
+  assert.match(markup, /data-pixel-cost-checkpoint/)
+  assert.match(markup, /data-pixel-cost-board/)
+  assert.ok(markup.includes('成本确认 · 24 / 25'))
+  assert.ok(markup.includes('预计 1,000 个用户，每位每月 ¥19.9'))
+  assert.ok(markup.includes(`你现在每月约支付 ${formatCurrency(monthlyFixedCost)}`))
+  assert.match(markup, /理论月收入/)
+  assert.match(markup, /¥19,900/)
+  assert.match(markup, /理论月度差额/)
+  assert.match(markup, /data-action="confirm-cost-check"/)
+  assert.match(markup, /data-action="recalculate-cost-check"/)
+  assert.match(markup, /继续，去找第一百个用户/)
+  assert.match(markup, /返回重选价格/)
+  assert.match(markup, /data-scene-id="Q24"/)
+  assert.match(markup, /data-storyboard-frame="resolved"/)
+  assert.doesNotMatch(markup, /data-option-id=/)
 })
 
 test('25 题分别绑定 25 个 sceneId 和 50 个路径，不存在旧 1..12 clamp', () => {

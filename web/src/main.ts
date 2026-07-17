@@ -12,6 +12,7 @@ import {
   type QuizState,
 } from '../../packages/game-core/src/index.ts'
 import {
+  renderPixelCostCheckpoint,
   renderPixelIntro,
   renderPixelQuestion,
   renderPixelResult,
@@ -94,6 +95,7 @@ let started = false
 let state: QuizState = restartGame(quiz)
 let transition: PixelTransition | null = null
 let transitionTimer: number | null = null
+let showingPixelCostCheckpoint = false
 const preloadedAssets = new Set<string>()
 
 const escapeHtml = (value: string): string =>
@@ -212,6 +214,9 @@ function genericTransitionMarkup(question: QuizQuestion, activeTransition: Pixel
 function renderQuestion(): string {
   const question = currentQuestion()
   if (!question) return renderResult()
+  if (themeName === 'pixel' && showingPixelCostCheckpoint) {
+    return shell(renderPixelCostCheckpoint(state, quiz), '成本确认')
+  }
   if (themeName === 'pixel') return shell(renderPixelQuestion(state, quiz, transition), '正在闯关')
 
   return shell(`
@@ -351,10 +356,15 @@ function clearTransitionTimer(): void {
 
 function finishTransition(): void {
   if (!transition) return
+  const answeredQuestionId = state.currentQuestionId
   const nextState = transition.nextState
   clearTransitionTimer()
   transition = null
   state = nextState
+  showingPixelCostCheckpoint = themeName === 'pixel'
+    && answeredQuestionId === 'Q24'
+    && state.phase === 'playing'
+    && state.currentQuestionId === 'Q25'
   render()
 }
 
@@ -390,6 +400,17 @@ function selectOption(optionId: string): void {
 
 function handleAction(action: string): void {
   if (transition) return
+  if (action === 'confirm-cost-check') {
+    showingPixelCostCheckpoint = false
+    render()
+    return
+  }
+  if (action === 'recalculate-cost-check') {
+    showingPixelCostCheckpoint = false
+    state = goBack(quiz, state)
+    render()
+    return
+  }
   if (action === 'open-result-details') {
     app.querySelector<HTMLDialogElement>('[data-result-dialog]')?.showModal()
     return
@@ -400,12 +421,17 @@ function handleAction(action: string): void {
   }
   if (action === 'start') {
     started = true
+    showingPixelCostCheckpoint = false
     state = restartGame(quiz)
   }
-  if (action === 'back') state = goBack(quiz, state)
+  if (action === 'back') {
+    showingPixelCostCheckpoint = false
+    state = goBack(quiz, state)
+  }
   if (action === 'restart') {
     clearTransitionTimer()
     started = false
+    showingPixelCostCheckpoint = false
     state = restartGame(quiz)
   }
   render()
@@ -421,6 +447,11 @@ app.addEventListener('click', (event) => {
 
 window.addEventListener('keydown', (event) => {
   if (!started || state.phase !== 'playing' || transition || event.metaKey || event.ctrlKey || event.altKey) return
+  if (showingPixelCostCheckpoint) {
+    if (event.key === '1') handleAction('confirm-cost-check')
+    if (event.key === '2') handleAction('recalculate-cost-check')
+    return
+  }
   if (!/^[1-4]$/.test(event.key)) return
   const option = currentQuestion()?.options[Number(event.key) - 1]
   if (option) selectOption(option.id)
