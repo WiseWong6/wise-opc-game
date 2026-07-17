@@ -1294,15 +1294,15 @@
         "file": "web/public/assets/pixel/scenes-v2/Q14-desktop.webp",
         "width": 1536,
         "height": 1024,
-        "bytes": 308616,
-        "sha256": "2018a875174bbc61ea5f90809bc79a24a23879e17cdaac83c432ee477bcf4282"
+        "bytes": 532800,
+        "sha256": "a481f01c5d886efb14befc881940e8d1601bf2c267a96423fdf05b8ec00d1c77"
       },
       "mobile": {
         "file": "web/public/assets/pixel/scenes-v2/Q14-mobile.webp",
         "width": 1024,
         "height": 1536,
-        "bytes": 281348,
-        "sha256": "20f84182b10a0b7ff2017eeb2836f5f384361a1bf0cc31d6bf540bc87b082975"
+        "bytes": 508150,
+        "sha256": "200bf7a2289bb23dce03afb45d4703e7312ae69b4cebafe73bafe93ec3deb091"
       },
       "optionVariants": {
         "one-core-two-gb": {
