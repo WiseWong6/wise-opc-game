@@ -1,0 +1,31 @@
+{
+  "references": [
+    {
+      "path": "/var/folders/wt/pbvmgsp175x340vc9jkq7q3c0000gn/T/codex-clipboard-3d679d1b-9fd0-44af-bdb3-79e7b2385119.png",
+      "view": "multi-panel",
+      "provenance": "user",
+      "identity_authority": true,
+      "covered": [
+        "pixel-art tone",
+        "three-quarter right silhouette",
+        "messy black hair",
+        "light shirt and dark trousers",
+        "large brown backpack",
+        "standing, collapsed and celebrating poses"
+      ],
+      "missing": [
+        "clean front turnaround",
+        "clean side turnaround",
+        "clean back turnaround",
+        "facial close-up",
+        "exact bag construction"
+      ]
+    }
+  ],
+  "approved_scope": "canonical character concept sheet only",
+  "approval_note": "User explicitly said to continue after the character-first scope and reference-based approach were explained.",
+  "inference_limits": [
+    "Infer hidden views without overriding the visible reference anchors.",
+    "Do not integrate generated art into runtime until the user approves the identity sheet."
+  ]
+}

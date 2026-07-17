@@ -7,6 +7,13 @@
     "checkedAt": "2026-07-16"
   },
   {
+    "key": "safe-usd-cny-2026-07-16",
+    "label": "国家外汇管理局：2026-07-16 人民币汇率中间价，100 美元 = 679.09 元人民币",
+    "url": "https://www.safe.gov.cn/AppStructured/hlw/RMBQuery.do?COLLCC=546877760",
+    "sourceType": "官方汇率",
+    "checkedAt": "2026-07-16"
+  },
+  {
     "key": "article-historical-cost",
     "label": "《一人公司闯关：从入门到放弃。》中的历史成本口径",
     "url": null,

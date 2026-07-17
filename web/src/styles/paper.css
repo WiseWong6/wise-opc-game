@@ -43,7 +43,7 @@ body[data-theme="paper"] .paper-teeth {
   background: radial-gradient(circle at 8px -1px, #453126 8px, transparent 8.5px) 0 0 / 20px 15px repeat-x;
 }
 body[data-theme="paper"] .mobile-brand { border-bottom: 2px solid #3c2b20; }
-body[data-theme="paper"] .mobile-brand::after { content: "NO. 000012"; position: absolute; right: 0; top: 18px; color: #9d2c21; font: 700 9px/1 ui-monospace, monospace; }
+body[data-theme="paper"] .mobile-brand::after { content: "NO. 000025"; position: absolute; right: 0; top: 18px; color: #9d2c21; font: 700 9px/1 ui-monospace, monospace; }
 body[data-theme="paper"] .intro h1,
 body[data-theme="paper"] .question h1,
 body[data-theme="paper"] .result h1 { font-family: Georgia, "Songti SC", "STSong", serif; font-weight: 850; letter-spacing: -.045em; }

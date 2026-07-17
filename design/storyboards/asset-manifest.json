@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "updated": "2026-07-16",
+  "status": "deprecated-style-reference",
+  "supersededBy": "design/storyboards/scene-manifest-v2.json",
+  "note": "旧 stage-00..12 只保留为首页和画风参考，不计入 25 题场景完成度，也不参与题目运行时路由。",
+  "identitySource": "design/characters/founder/canonical-turnaround-v1.png",
+  "runtimeEncoding": {
+    "format": "WebP lossy",
+    "quality": 90,
+    "method": 6,
+    "sharpYuv": true,
+    "perAssetBudgetBytes": 800000
+  },
+  "frameContract": {
+    "layout": "2x2",
+    "topLeft": "idle",
+    "topRight": "action",
+    "bottomLeft": "pass",
+    "bottomRight": "quit",
+    "introException": "stage-00 uses T0, T1, T2, T3 in reading order"
+  },
+  "assets": [
+    { "stage": 0, "id": "intro", "title": "办事大厅入口", "file": "web/public/assets/pixel/storyboards/stage-00.webp", "bytes": 209334, "sha256": "fb15139af8abf3df3ea87279d024f245cdc98e53b0eb4492092b6d368757aa2c" },
+    { "stage": 1, "id": "want-company", "title": "多岗分流台", "file": "web/public/assets/pixel/storyboards/stage-01.webp", "bytes": 288940, "sha256": "c63a3d3d5d3ac8ac1a5b87d42acaa5fb2b3ec05b8e23260cfbb60baa27a98430" },
+    { "stage": 2, "id": "company-registration", "title": "注册专窗", "file": "web/public/assets/pixel/storyboards/stage-02.webp", "bytes": 318402, "sha256": "dd0c89c1f4bfe8dc45bc8d1661b70c0989d0157317e2902e9dcefa3b219246db" },
+    { "stage": 3, "id": "registered-address", "title": "地址迷宫", "file": "web/public/assets/pixel/storyboards/stage-03.webp", "bytes": 277210, "sha256": "fcd8d74c2668a2c5fd757d8e14197333a6ad4e5b27ee963d6245d5ae4cbafeee" },
+    { "stage": 4, "id": "bookkeeping-tax", "title": "财税档案室", "file": "web/public/assets/pixel/storyboards/stage-04.webp", "bytes": 257034, "sha256": "3cc521b464053f1ccd93e8451109f73d728ae653f94e24d61b5e9a8e8f2c7962" },
+    { "stage": 5, "id": "bank-payment", "title": "银行审核大厅", "file": "web/public/assets/pixel/storyboards/stage-05.webp", "bytes": 240398, "sha256": "fee226f15decd88f2b40d6265c71a4a8083bc97a3a4376d6863326106d8139f3" },
+    { "stage": 6, "id": "infrastructure", "title": "云资源机房", "file": "web/public/assets/pixel/storyboards/stage-06.webp", "bytes": 228432, "sha256": "11e27565012b410ca7e8a41f2d6d25299187f4e129566fceeb5dded6120e8d80" },
+    { "stage": 7, "id": "filings", "title": "备案长廊", "file": "web/public/assets/pixel/storyboards/stage-07.webp", "bytes": 170458, "sha256": "6a67ccb0f9eeae9bb07a308d6d41365ae82d23b635851bdf4842ac4a2c5212fb" },
+    { "stage": 8, "id": "aigc-readiness", "title": "AI 内容审查实验室", "file": "web/public/assets/pixel/storyboards/stage-08.webp", "bytes": 232588, "sha256": "00b4d2ea229996cb22af8aaa139cf650d07af1365755a333823e00eb8a172097" },
+    { "stage": 9, "id": "operating-license", "title": "经营许可多重闸门", "file": "web/public/assets/pixel/storyboards/stage-09.webp", "bytes": 245984, "sha256": "55d1db56bc13359288eff4450414209b816af95b49e501470692e4659947c49b" },
+    { "stage": 10, "id": "data-security", "title": "数据安全审计地堡", "file": "web/public/assets/pixel/storyboards/stage-10.webp", "bytes": 271276, "sha256": "bd9ae2ee6b6e56e98c87d965c25a5357a9811bec7476083949b7298e440239cd" },
+    { "stage": 11, "id": "business-model", "title": "商业模式压力舱", "file": "web/public/assets/pixel/storyboards/stage-11.webp", "bytes": 285260, "sha256": "2a87a6b40af8362bf3dc7790b4d86cfe7228779e0041ce35077fa087d0d34737" },
+    { "stage": 12, "id": "growth-operations", "title": "深夜增长战情室", "file": "web/public/assets/pixel/storyboards/stage-12.webp", "bytes": 172734, "sha256": "2fdbb22a9413be9d3f87e55176e3c560fbd53b14db76a660bfaf6a96f794c57c" }
+  ]
+}
