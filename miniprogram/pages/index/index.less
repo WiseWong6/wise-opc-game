@@ -124,6 +124,7 @@
   border: 2rpx solid #c8c7c2;
   background: #c8c7c2;
 }
+.ledger-v2 { grid-template-columns: repeat(2, 1fr); }
 
 .ledger-cell {
   min-width: 0;
@@ -171,10 +172,12 @@
 }
 
 .cost-list { display: flex; flex-direction: column; gap: 8rpx; margin-top: 18rpx; color: #575550; font-size: 21rpx; line-height: 1.45; }
+.fact-notes { display: flex; flex-direction: column; gap: 8rpx; color: #66645f; font-size: 21rpx; line-height: 1.5; }
 .actions { display: flex; flex-direction: column; gap: 20rpx; }
+.option-button { display: grid; grid-template-columns: 48rpx minmax(0, 1fr); gap: 16rpx; justify-content: start; text-align: left; }
+.option-key { display: flex; width: 44rpx; height: 44rpx; align-items: center; justify-content: center; border: 2rpx solid currentColor; font-family: monospace; font-size: 20rpx; }
 .back-button { align-self: flex-start; margin: 4rpx 0 0; padding: 0; color: #777570; background: transparent; font-size: 21rpx; text-decoration: underline; }
 .back-button::after { border: 0; }
-.spectator-note { color: #777570; font-size: 21rpx; line-height: 1.6; }
 
 .pass-overlay {
   position: fixed;
@@ -201,6 +204,15 @@
 .result-title { margin: 28rpx 0; font-size: 66rpx; }
 .result-ledger { width: 100%; }
 .result-notice { display: flex; flex-direction: column; gap: 8rpx; margin: 34rpx 0; padding: 28rpx 0; border-top: 2rpx solid #c8c7c2; border-bottom: 2rpx solid #c8c7c2; font-size: 23rpx; line-height: 1.5; }
+.badges { display: flex; flex-wrap: wrap; gap: 12rpx; margin-top: 24rpx; }
+.badges text { padding: 10rpx 14rpx; border: 2rpx solid #c8c7c2; background: #eeede8; font-size: 20rpx; font-weight: 700; }
+.score-grid,
+.result-ledger-full,
+.business-projection { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rpx; margin-top: 24rpx; border: 2rpx solid #c8c7c2; background: #c8c7c2; }
+.score-grid view,
+.result-ledger-full view,
+.business-projection view { display: flex; flex-direction: column; gap: 8rpx; padding: 18rpx; color: #676560; background: #f8f7f3; font-size: 20rpx; }
+.business-projection .projection-note { grid-column: 1 / -1; padding: 14rpx 18rpx; color: #777570; background: #f8f7f3; font-size: 19rpx; line-height: 1.5; }
 
 @keyframes pass-in {
   0% { opacity: 0; transform: scale(1.04); }
