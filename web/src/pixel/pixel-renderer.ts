@@ -50,21 +50,78 @@ function interpolateText(value: string, gameState: QuizState): string {
   return interpolateQuizText(value, gameState.result?.ledger ?? gameState.ledger)
 }
 
-function pixelLedgerMarkup(gameState: QuizState): string {
-  const ledger = formatLedger(gameState.result?.ledger ?? gameState.ledger)
+type PixelHudKind = 'cash' | 'fixed' | 'time' | 'path'
+
+function compactCurrency(value: number, hasUnknownAmount: boolean): string {
+  const formatted = Math.abs(value) >= 10_000
+    ? `¥${(value / 10_000).toLocaleString('zh-CN', { maximumFractionDigits: 2 })}万`
+    : `¥${value.toLocaleString('zh-CN', { maximumFractionDigits: 2 })}`
+  return `${formatted}${hasUnknownAmount ? '+待定' : ''}`
+}
+
+function changedHudKinds(beforeState: QuizState, afterState: QuizState): Set<PixelHudKind> {
+  const before = beforeState.result?.ledger ?? beforeState.ledger
+  const after = afterState.result?.ledger ?? afterState.ledger
+  const changed = new Set<PixelHudKind>()
+  if (
+    before.costs.paidSunk.totalCny !== after.costs.paidSunk.totalCny
+    || before.costs.paidSunk.hasUnknownAmount !== after.costs.paidSunk.hasUnknownAmount
+  ) changed.add('cash')
+  if (
+    before.costs.firstYearCommitted.totalCny !== after.costs.firstYearCommitted.totalCny
+    || before.costs.firstYearCommitted.hasUnknownAmount !== after.costs.firstYearCommitted.hasUnknownAmount
+  ) changed.add('fixed')
+  if (
+    before.time.founderHours !== after.time.founderHours
+    || before.time.recurringMonthlyHours !== after.time.recurringMonthlyHours
+  ) changed.add('time')
+  if (before.time.criticalPathDays !== after.time.criticalPathDays) changed.add('path')
+  return changed
+}
+
+function pixelLedgerMarkup(gameState: QuizState, changed = new Set<PixelHudKind>()): string {
+  const rawLedger = gameState.result?.ledger ?? gameState.ledger
+  const ledger = formatLedger(rawLedger)
   const cells = [
-    { kind: 'cash', icon: '¥', label: '已付', value: ledger.paidSunk },
-    { kind: 'fixed', icon: '年', label: '首年', value: ledger.firstYearCommitted },
-    { kind: 'time', icon: '时', label: '工时', value: ledger.founderTime },
-    { kind: 'path', icon: '天', label: '关键路径', value: ledger.criticalPath },
+    {
+      kind: 'cash' as const,
+      icon: '¥',
+      label: '已付',
+      value: ledger.paidSunk,
+      compactValue: compactCurrency(rawLedger.costs.paidSunk.totalCny, rawLedger.costs.paidSunk.hasUnknownAmount),
+    },
+    {
+      kind: 'fixed' as const,
+      icon: '年',
+      label: '首年',
+      value: ledger.firstYearCommitted,
+      compactValue: compactCurrency(rawLedger.costs.firstYearCommitted.totalCny, rawLedger.costs.firstYearCommitted.hasUnknownAmount),
+    },
+    {
+      kind: 'time' as const,
+      icon: '时',
+      label: '工时',
+      value: ledger.founderTime,
+      compactValue: `${rawLedger.time.founderHours}h${rawLedger.time.recurringMonthlyHours ? `+${rawLedger.time.recurringMonthlyHours}h/月` : ''}`,
+    },
+    {
+      kind: 'path' as const,
+      icon: '天',
+      label: '关键路径',
+      value: ledger.criticalPath,
+      compactValue: `${Math.round(rawLedger.time.criticalPathDays * 10) / 10}天`,
+    },
   ]
 
   return `
     <dl class="pixel-hud" data-pixel-hud aria-label="当前经营账本">
       ${cells.map((cell) => `
-        <div class="pixel-hud__cell pixel-hud__cell--${cell.kind}">
+        <div class="pixel-hud__cell pixel-hud__cell--${cell.kind}${changed.has(cell.kind) ? ' pixel-hud__cell--changed' : ''}" data-pixel-hud-cell="${cell.kind}">
           <dt><span class="pixel-hud__icon" aria-hidden="true">${cell.icon}</span>${cell.label}</dt>
-          <dd>${escapeHtml(cell.value)}</dd>
+          <dd title="${escapeHtml(cell.value)}" aria-label="${escapeHtml(`${cell.label}：${cell.value}`)}">
+            <span class="pixel-hud__value pixel-hud__value--full" aria-hidden="true">${escapeHtml(cell.value)}</span>
+            <span class="pixel-hud__value pixel-hud__value--compact" aria-hidden="true">${escapeHtml(cell.compactValue)}</span>
+          </dd>
         </div>
       `).join('')}
     </dl>
@@ -80,18 +137,6 @@ function sceneMarkup(
   sequence = false,
   optionVisual?: { optionId: string; overlay?: OptionVisualOverlay; variant: OptionVisualVariant },
 ): string {
-  const overlayTone = optionVisual?.overlay?.tone && ['brand', 'success', 'warning'].includes(optionVisual.overlay.tone)
-    ? optionVisual.overlay.tone
-    : 'neutral'
-  const overlayMarkup = optionVisual?.overlay
-    ? `
-      <div class="pixel-option-visual pixel-option-visual--${overlayTone}" data-option-visual-overlay aria-hidden="true">
-        ${optionVisual.overlay.eyebrow ? `<small>${escapeHtml(optionVisual.overlay.eyebrow)}</small>` : ''}
-        <strong>${escapeHtml(optionVisual.overlay.title)}</strong>
-        ${optionVisual.overlay.detail ? `<span>${escapeHtml(optionVisual.overlay.detail)}</span>` : ''}
-      </div>
-    `
-    : ''
   const optionFrameMarkup = optionVisual
     ? (['action', 'resolved'] as const).map((frame) => {
       const assets = optionVisual.variant[frame]
@@ -114,7 +159,6 @@ function sceneMarkup(
       </div>
       ${optionFrameMarkup ? `<div class="pixel-world__option-art">${optionFrameMarkup}</div>` : ''}
       <div class="pixel-world__grade"></div>
-      ${overlayMarkup}
     </div>
   `
 }
@@ -137,127 +181,26 @@ function progressMarkup(question: QuizQuestion, count: number): string {
   const percent = Math.round((question.number / count) * 100)
   return `
     <div class="pixel-progress" data-pixel-status-rail aria-label="闯关进度 ${question.number} / ${count}">
-      <span>${escapeHtml(question.chapterId)} · 第 ${question.number} / ${count} 题</span>
+      <span>第 ${question.number} / ${count} 题</span>
       <div class="pixel-progress__track"><i style="width:${percent}%"></i></div>
     </div>
   `
 }
 
-interface PixelImpactItem {
-  kind: 'cash' | 'fixed' | 'renewal' | 'variable' | 'quote' | 'capital' | 'hours' | 'recurring' | 'days' | 'todo'
-  label: string
-  value: string
-  direction: 'up' | 'down' | 'neutral'
-}
-
-const rounded = (value: number): number => Math.round(value * 10) / 10
-
-function signedCurrency(value: number): string {
-  const sign = value > 0 ? '+' : value < 0 ? '−' : ''
-  const absolute = Math.abs(value)
-  const fractionDigits = Number.isInteger(absolute) ? 0 : 2
-  const formatted = new Intl.NumberFormat('zh-CN', {
-    style: 'currency',
-    currency: 'CNY',
-    minimumFractionDigits: fractionDigits,
-    maximumFractionDigits: 2,
-  }).format(absolute)
-  return `${sign}${formatted}`
-}
-
-function signedNumber(value: number, suffix: string): string {
-  const sign = value > 0 ? '+' : value < 0 ? '−' : ''
-  return `${sign}${rounded(Math.abs(value))}${suffix}`
-}
-
-function impactItems(beforeState: QuizState, afterState: QuizState): PixelImpactItem[] {
-  const before = beforeState.result?.ledger ?? beforeState.ledger
-  const after = afterState.result?.ledger ?? afterState.ledger
-  const items: PixelImpactItem[] = []
-  const addMoney = (kind: PixelImpactItem['kind'], label: string, beforeValue: number, afterValue: number): void => {
-    const delta = rounded(afterValue - beforeValue)
-    if (delta === 0) return
-    items.push({ kind, label, value: signedCurrency(delta), direction: delta > 0 ? 'up' : 'down' })
-  }
-
-  addMoney('cash', '已支付', before.costs.paidSunk.totalCny, after.costs.paidSunk.totalCny)
-  addMoney('fixed', '首年', before.costs.firstYearCommitted.totalCny, after.costs.firstYearCommitted.totalCny)
-  addMoney('renewal', '续费', before.costs.renewal.totalCny, after.costs.renewal.totalCny)
-  addMoney('quote', '待报价', before.costs.pendingQuote.totalCny, after.costs.pendingQuote.totalCny)
-  addMoney('capital', '资本门槛', before.costs.capitalRequirement.totalCny, after.costs.capitalRequirement.totalCny)
-
-  const unknownVariableDelta = Number(after.costs.variable.hasUnknownAmount) - Number(before.costs.variable.hasUnknownAmount)
-  if (unknownVariableDelta !== 0) {
-    items.push({
-      kind: 'variable',
-      label: '变动成本',
-      value: unknownVariableDelta > 0 ? '+按量' : '−按量',
-      direction: unknownVariableDelta > 0 ? 'up' : 'down',
-    })
-  }
-
-  const hourDelta = rounded(after.time.founderHours - before.time.founderHours)
-  if (hourDelta !== 0) items.push({ kind: 'hours', label: '工时', value: signedNumber(hourDelta, 'h'), direction: hourDelta > 0 ? 'up' : 'down' })
-  const recurringDelta = rounded(after.time.recurringMonthlyHours - before.time.recurringMonthlyHours)
-  if (recurringDelta !== 0) items.push({ kind: 'recurring', label: '每月工时', value: signedNumber(recurringDelta, 'h'), direction: recurringDelta > 0 ? 'up' : 'down' })
-  const dayDelta = rounded(after.time.criticalPathDays - before.time.criticalPathDays)
-  if (dayDelta !== 0) items.push({ kind: 'days', label: '关键路径', value: signedNumber(dayDelta, '天'), direction: dayDelta > 0 ? 'up' : 'down' })
-  const todoDelta = after.todos.length - before.todos.length
-  if (todoDelta !== 0) items.push({ kind: 'todo', label: '待办', value: signedNumber(todoDelta, '项'), direction: todoDelta > 0 ? 'up' : 'down' })
-  return items
-}
-
-const feedbackOutcomes = new Set([
-  'gpt-sacrifice',
-  'ai-gpt',
-  'ai-glm',
-  'ai-kimi',
-  'ai-free',
-  'ai-off',
-  'token-flow',
-])
-
-function feedbackOutcomeMarkup(transition: PixelTransition): string {
-  const outcome = transition.visualOutcome
-  if (!outcome || !feedbackOutcomes.has(outcome)) return ''
-
-  if (outcome === 'gpt-sacrifice') {
-    return `
-      <span class="pixel-choice-effect pixel-choice-effect--sacrifice" aria-hidden="true">
-        <i class="pixel-choice-effect__subscription"></i><i class="pixel-choice-effect__trail"></i><i class="pixel-choice-effect__payment-slot"></i>
-      </span>
-    `
-  }
-
-  if (outcome === 'token-flow') {
-    return `
-      <span class="pixel-choice-effect pixel-choice-effect--token" aria-hidden="true">
-        <i></i><i></i><i></i><b></b>
-      </span>
-    `
-  }
-
+function optionFeedbackMarkup(transition: PixelTransition, overlay?: OptionVisualOverlay): string {
+  const tone = overlay?.tone && ['brand', 'success', 'warning'].includes(overlay.tone)
+    ? overlay.tone
+    : 'neutral'
+  const eyebrow = overlay?.eyebrow ?? '选择确认'
+  const title = overlay?.title ?? transition.optionLabel
   return `
-    <span class="pixel-choice-effect pixel-choice-effect--ai pixel-choice-effect--${outcome}" aria-hidden="true">
-      <i class="pixel-choice-effect__core"></i><i class="pixel-choice-effect__wire"></i><b></b>
-    </span>
-  `
-}
-
-function impactMarkup(gameState: QuizState, transition: PixelTransition): string {
-  const items = impactItems(gameState, transition.nextState)
-  const feedbackOutcome = transition.visualOutcome && feedbackOutcomes.has(transition.visualOutcome)
-    ? transition.visualOutcome
-    : 'ledger'
-  return `
-    <div class="pixel-impact-strip pixel-impact-strip--${escapeHtml(feedbackOutcome)}" data-pixel-impact data-pixel-transition data-selected-option="${escapeHtml(transition.optionId)}" data-visual-outcome="${escapeHtml(feedbackOutcome)}" role="status" aria-live="polite" aria-label="已选择 ${escapeHtml(transition.optionLabel)}；本次账本变化">
-      <span class="pixel-impact-strip__choice"><small>已选</small><strong title="${escapeHtml(transition.optionLabel)}">${escapeHtml(transition.optionLabel)}</strong></span>
-      ${feedbackOutcomeMarkup(transition)}
-      ${items.length ? items.map((item) => `
-        <span class="pixel-impact-chip pixel-impact-chip--${item.kind} pixel-impact-chip--${item.direction}">
-          <small>${escapeHtml(item.label)}</small><strong>${escapeHtml(item.value)}</strong>
-        </span>
-      `).join('') : `<span class="pixel-impact-strip__summary">本次选择不改变账本</span>`}
+    <div class="pixel-option-feedback pixel-option-visual pixel-option-visual--${tone}" data-pixel-option-feedback data-pixel-transition data-option-visual-overlay data-selected-option="${escapeHtml(transition.optionId)}"${transition.visualOutcome ? ` data-visual-outcome="${escapeHtml(transition.visualOutcome)}"` : ''} role="status" aria-live="polite" aria-label="已选择 ${escapeHtml(transition.optionLabel)}">
+      <img class="pixel-option-feedback__motion" src="/assets/pixel/motion/choice-confirm.webp" alt="" width="160" height="80" aria-hidden="true" />
+      <span class="pixel-option-feedback__copy">
+        <small>${escapeHtml(eyebrow)}</small>
+        <strong title="${escapeHtml(title)}">${escapeHtml(title)}</strong>
+        ${overlay?.detail ? `<span>${escapeHtml(overlay.detail)}</span>` : ''}
+      </span>
     </div>
   `
 }
@@ -273,7 +216,7 @@ function optionsMarkup(question: QuizQuestion, gameState: QuizState): string {
       `).join('')}
     </div>
     <div class="secondary-row">
-      <button class="text-button" data-action="back" ${gameState.history.length === 0 ? 'disabled' : ''}>← 返回上一题重选</button>
+      <button class="text-button" data-action="back" ${gameState.history.length === 0 ? 'disabled' : ''}>返回上一题重选</button>
       <span>键盘：1～${question.options.length} 选择</span>
     </div>
   `
@@ -365,8 +308,8 @@ export function renderPixelQuestion(
 
   return `
     <div class="pixel-layout pixel-layout--challenge ${transition ? 'pixel-layout--frozen' : ''}" data-selected-option="${escapeHtml(transition?.optionId ?? '')}" aria-busy="${transition ? 'true' : 'false'}">
-      ${pixelLedgerMarkup(ledgerState)}
-      ${transition && !showFullTransition ? impactMarkup(gameState, transition) : progressMarkup(question, quiz.questions.length)}
+      ${pixelLedgerMarkup(ledgerState, transition ? changedHudKinds(gameState, transition.nextState) : undefined)}
+      ${progressMarkup(question, quiz.questions.length)}
       ${stageMarkup(
         sceneMarkup(
           'question',
@@ -379,7 +322,11 @@ export function renderPixelQuestion(
             ? { optionId: visual.optionId, overlay: visual.overlay, variant: visual.optionVariant ?? {} }
             : undefined,
         ),
-        `${moneyRainMarkup(transition)}${transition && showFullTransition ? transitionMarkup(question, transition, quiz) : ''}`,
+        `${moneyRainMarkup(transition)}${transition && showFullTransition
+          ? transitionMarkup(question, transition, quiz)
+          : transition
+            ? optionFeedbackMarkup(transition, visual.overlay)
+            : ''}`,
         'pixel-stage--question',
       )}
       <section class="pixel-dossier pixel-dossier--question" data-option-count="${question.options.length}" ${transition ? 'inert' : ''}>
@@ -398,7 +345,11 @@ function scoreMarkup(gameState: QuizState): string {
   return `
     <div class="pixel-score-grid" aria-label="四项评分">
       ${Object.entries(result.score.dimensions).map(([key, dimension]) => `
-        <div><span>${SCORE_LABELS[key as keyof typeof SCORE_LABELS]}</span><strong>${dimension.score} / ${dimension.cap}</strong></div>
+        <div class="pixel-score-grid__item">
+          <span>${SCORE_LABELS[key as keyof typeof SCORE_LABELS]}</span>
+          <strong>${dimension.score} / ${dimension.cap}</strong>
+          <i aria-hidden="true"><b style="width:${Math.round((dimension.score / dimension.cap) * 100)}%"></b></i>
+        </div>
       `).join('')}
     </div>
   `
@@ -444,17 +395,25 @@ export function renderPixelResult(gameState: QuizState, quiz: QuizDefinition): s
     : undefined
   const visual = resolvePixelVisual(question, completedOptionId)
   const resultPanel = `
-    <section class="pixel-result-panel" aria-labelledby="pixel-result-title">
-      <div class="pixel-result-stamp">${completed ? '正式上线' : '到此为止'}</div>
-      <p class="pixel-dossier__eyebrow">答完 ${result.answeredCount} 题 · 总分 ${result.score.total} / 100</p>
-      <h1 id="pixel-result-title">${escapeHtml(result.title)}</h1>
+    <section class="pixel-result-panel" data-pixel-achievement aria-labelledby="pixel-result-title">
+      <header class="pixel-certificate__hero">
+        <div class="pixel-score-medallion" aria-label="总分 ${result.score.total} 分">
+          <img src="/assets/pixel/motion/achievement-reveal.webp" alt="" width="256" height="256" aria-hidden="true" />
+          <span><strong>${result.score.total}</strong><small>/ 100</small></span>
+        </div>
+        <div class="pixel-certificate__identity">
+          <div class="pixel-result-stamp">${completed ? '正式上线' : '到此为止'}</div>
+          <p class="pixel-dossier__eyebrow">像素荣誉证书 · 答完 ${result.answeredCount} 题</p>
+          <h1 id="pixel-result-title">${escapeHtml(result.title)}</h1>
+        </div>
+      </header>
       <p class="pixel-result-conclusion">${escapeHtml(result.conclusion)}</p>
-      ${result.badges.length ? `<div class="pixel-badges">${result.badges.map((badge) => `<span>${escapeHtml(badge.label)}</span>`).join('')}</div>` : ''}
+      ${result.badges.length ? `<div class="pixel-badges" aria-label="成就章">${result.badges.map((badge) => `<span>${escapeHtml(badge.label)}</span>`).join('')}</div>` : ''}
       ${scoreMarkup(gameState)}
       ${businessProjectionMarkup(gameState)}
       <div class="result__actions">
         <button class="button button--primary" data-action="open-result-details">查看完整结算</button>
-        <button class="button button--ghost" data-action="back">← 返回上一题</button>
+        <button class="button button--ghost" data-action="back">返回上一题</button>
         <button class="text-button" data-action="restart">重新开始并清零</button>
       </div>
     </section>
@@ -492,7 +451,7 @@ export function renderPixelResult(gameState: QuizState, quiz: QuizDefinition): s
           visual.mobileAsset,
           false,
           completed && visual.source === 'option' && visual.optionId
-            ? { optionId: visual.optionId, overlay: visual.overlay, variant: visual.optionVariant ?? {} }
+            ? { optionId: visual.optionId, variant: visual.optionVariant ?? {} }
             : undefined,
         ),
         resultPanel,

@@ -360,14 +360,14 @@ function finishTransition(): void {
 
 function scheduleTransition(): void {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  const visibleDuration = reduceMotion ? (themeName === 'pixel' ? 560 : 80) : themeName === 'pixel' ? 920 : 520
+  const visibleDuration = reduceMotion ? 80 : themeName === 'pixel' ? 720 : 520
   if (themeName === 'pixel' && !reduceMotion) {
     const transitionNode = app.querySelector<HTMLElement>('[data-pixel-transition]')
     transitionNode?.addEventListener('animationend', (event) => {
       if (event.target === transitionNode && event.animationName === 'pixel-transition-lifecycle') finishTransition()
     }, { once: true })
   }
-  transitionTimer = window.setTimeout(finishTransition, visibleDuration + (themeName === 'pixel' && !reduceMotion ? 180 : 0))
+  transitionTimer = window.setTimeout(finishTransition, visibleDuration + (themeName === 'pixel' && !reduceMotion ? 120 : 0))
 }
 
 function selectOption(optionId: string): void {
