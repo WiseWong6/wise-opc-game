@@ -9,7 +9,6 @@ import {
   type QuizState,
 } from '../../../packages/game-core/src/index.ts'
 import { resolvePixelVisual, type PixelVisualOutcome } from './pixel-scenes.ts'
-import { resolvePixelSceneGuide, type PixelSceneGuide } from './pixel-scene-guides.ts'
 
 export interface PixelTransition {
   optionId: string
@@ -51,26 +50,6 @@ function interpolateText(value: string, gameState: QuizState): string {
   return interpolateQuizText(value, gameState.result?.ledger ?? gameState.ledger)
 }
 
-function sceneGuideFor(questionId: string, gameState: QuizState): PixelSceneGuide | undefined {
-  const guide = resolvePixelSceneGuide(questionId)
-  if (!guide || questionId !== 'Q24') return guide
-
-  const users = Number(gameState.metrics.users)
-  if (!Number.isFinite(users)) return guide
-  const formattedUsers = new Intl.NumberFormat('zh-CN').format(users)
-
-  return {
-    ...guide,
-    items: guide.items.map((item) => item.id === 'formula'
-      ? {
-          ...item,
-          title: `${formattedUsers} 位预计用户 × 月费`,
-          detail: '用户数来自上一题 · 理论月流水 ≠ 利润',
-        }
-      : item),
-  }
-}
-
 function pixelLedgerMarkup(gameState: QuizState): string {
   const ledger = formatLedger(gameState.result?.ledger ?? gameState.ledger)
   const cells = [
@@ -100,7 +79,6 @@ function sceneMarkup(
   mobileAsset: string,
   sequence = false,
   optionVisual?: { optionId: string; overlay?: OptionVisualOverlay; variant: OptionVisualVariant },
-  sceneGuide?: PixelSceneGuide,
 ): string {
   const overlayTone = optionVisual?.overlay?.tone && ['brand', 'success', 'warning'].includes(optionVisual.overlay.tone)
     ? optionVisual.overlay.tone
@@ -126,22 +104,6 @@ function sceneMarkup(
       `
     }).join('')
     : ''
-  const guideMarkup = sceneGuide
-    ? `
-      <div class="pixel-scene-guide pixel-scene-guide--${sceneGuide.layout}" data-pixel-scene-guide aria-hidden="true">
-        ${sceneGuide.eyebrow ? `<small class="pixel-scene-guide__eyebrow">${escapeHtml(sceneGuide.eyebrow)}</small>` : ''}
-        <div class="pixel-scene-guide__items">
-          ${sceneGuide.items.map((item) => `
-            <div class="pixel-scene-guide__item pixel-scene-guide__item--${item.tone ?? 'neutral'} ${item.optionId && optionVisual?.optionId === item.optionId ? 'is-selected' : ''}"${item.brand ? ` data-brand="${escapeHtml(item.brand)}"` : ''}>
-              ${item.brand ? '<i class="pixel-scene-guide__brand"></i>' : ''}
-              <strong>${escapeHtml(item.title)}</strong>
-              ${item.detail ? `<span>${escapeHtml(item.detail)}</span>` : ''}
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `
-    : ''
   return `
     <div class="pixel-world pixel-world--illustrated pixel-world--${mode} pixel-world--frame-${frame} ${sequence ? 'pixel-world--sequence-accept' : ''}" data-pixel-scene="${mode}" data-scene-id="${escapeHtml(sceneId)}" data-storyboard-frame="${frame}" data-visual-source="${optionVisual ? 'option' : 'question'}"${optionVisual ? ` data-option-visual="${escapeHtml(optionVisual.optionId)}"` : ''} aria-hidden="true">
       <div class="pixel-world__art">
@@ -152,8 +114,16 @@ function sceneMarkup(
       </div>
       ${optionFrameMarkup ? `<div class="pixel-world__option-art">${optionFrameMarkup}</div>` : ''}
       <div class="pixel-world__grade"></div>
-      ${guideMarkup}
       ${overlayMarkup}
+    </div>
+  `
+}
+
+function stageMarkup(scene: string, overlay = '', modifier = ''): string {
+  return `
+    <div class="pixel-stage ${modifier}" data-pixel-stage>
+      ${scene}
+      ${overlay}
     </div>
   `
 }
@@ -294,7 +264,7 @@ function impactMarkup(gameState: QuizState, transition: PixelTransition): string
 
 function optionsMarkup(question: QuizQuestion, gameState: QuizState): string {
   return `
-    <div class="pixel-choice-list" role="group" aria-label="可选答案">
+    <div class="pixel-choice-list" data-option-count="${question.options.length}" role="group" aria-label="可选答案">
       ${question.options.map((option, index) => `
         <button class="pixel-choice-card" type="button" data-option-id="${escapeHtml(option.id)}">
           <span class="pixel-choice-card__key" aria-hidden="true">${index + 1}</span>
@@ -397,32 +367,27 @@ export function renderPixelQuestion(
     <div class="pixel-layout pixel-layout--challenge ${transition ? 'pixel-layout--frozen' : ''}" data-selected-option="${escapeHtml(transition?.optionId ?? '')}" aria-busy="${transition ? 'true' : 'false'}">
       ${pixelLedgerMarkup(ledgerState)}
       ${transition && !showFullTransition ? impactMarkup(gameState, transition) : progressMarkup(question, quiz.questions.length)}
-      ${sceneMarkup(
-        'question',
-        frame,
-        visual.sceneId,
-        visual.desktopAsset,
-        visual.mobileAsset,
-        Boolean(transition && transition.outcome !== 'quit'),
-        visual.source === 'option' && visual.optionId
-          ? { optionId: visual.optionId, overlay: visual.overlay, variant: visual.optionVariant ?? {} }
-          : undefined,
-        sceneGuideFor(question.id, ledgerState),
+      ${stageMarkup(
+        sceneMarkup(
+          'question',
+          frame,
+          visual.sceneId,
+          visual.desktopAsset,
+          visual.mobileAsset,
+          Boolean(transition && transition.outcome !== 'quit'),
+          visual.source === 'option' && visual.optionId
+            ? { optionId: visual.optionId, overlay: visual.overlay, variant: visual.optionVariant ?? {} }
+            : undefined,
+        ),
+        `${moneyRainMarkup(transition)}${transition && showFullTransition ? transitionMarkup(question, transition, quiz) : ''}`,
+        'pixel-stage--question',
       )}
-      <section class="pixel-dossier pixel-dossier--question" ${transition ? 'inert' : ''}>
+      <section class="pixel-dossier pixel-dossier--question" data-option-count="${question.options.length}" ${transition ? 'inert' : ''}>
         <i class="pixel-dossier__clip" aria-hidden="true"></i>
         <p class="pixel-dossier__eyebrow">${escapeHtml(visual.chapterLabel)} / ${escapeHtml(visual.sceneId)}</p>
         <h1>${escapeHtml(interpolateText(question.prompt, gameState))}</h1>
-        ${question.factNotes.length ? `
-          <details class="pixel-cost-details">
-            <summary>事实说明（不改题目原文）</summary>
-            <ul>${question.factNotes.map((note) => `<li>${escapeHtml(note)}</li>`).join('')}</ul>
-          </details>
-        ` : ''}
         <div class="pixel-dossier__controls">${optionsMarkup(question, gameState)}</div>
       </section>
-      ${moneyRainMarkup(transition)}
-      ${transition && showFullTransition ? transitionMarkup(question, transition, quiz) : ''}
     </div>
   `
 }
@@ -444,14 +409,11 @@ function costSummaryMarkup(gameState: QuizState): string {
   if (!result) return ''
   const formatted = formatLedger(result.ledger)
   return `
-    <details class="pixel-result-ledger">
-      <summary>展开完整经营账本</summary>
-      <dl>
-        ${Object.entries(COST_LABELS).map(([key, label]) => `<div><dt>${label}</dt><dd>${escapeHtml(formatted[key as keyof typeof COST_LABELS])}</dd></div>`).join('')}
-        <div><dt>创始人工时</dt><dd>${escapeHtml(formatted.founderTime)}</dd></div>
-        <div><dt>上线关键路径</dt><dd>${escapeHtml(formatted.criticalPath)}</dd></div>
-      </dl>
-    </details>
+    <dl class="pixel-result-ledger">
+      ${Object.entries(COST_LABELS).map(([key, label]) => `<div><dt>${label}</dt><dd>${escapeHtml(formatted[key as keyof typeof COST_LABELS])}</dd></div>`).join('')}
+      <div><dt>创始人工时</dt><dd>${escapeHtml(formatted.founderTime)}</dd></div>
+      <div><dt>上线关键路径</dt><dd>${escapeHtml(formatted.criticalPath)}</dd></div>
+    </dl>
   `
 }
 
@@ -481,41 +443,61 @@ export function renderPixelResult(gameState: QuizState, quiz: QuizDefinition): s
     ? [...gameState.history].reverse().find((answer) => answer.questionId === question.id)?.optionId
     : undefined
   const visual = resolvePixelVisual(question, completedOptionId)
+  const resultPanel = `
+    <section class="pixel-result-panel" aria-labelledby="pixel-result-title">
+      <div class="pixel-result-stamp">${completed ? '正式上线' : '到此为止'}</div>
+      <p class="pixel-dossier__eyebrow">答完 ${result.answeredCount} 题 · 总分 ${result.score.total} / 100</p>
+      <h1 id="pixel-result-title">${escapeHtml(result.title)}</h1>
+      <p class="pixel-result-conclusion">${escapeHtml(result.conclusion)}</p>
+      ${result.badges.length ? `<div class="pixel-badges">${result.badges.map((badge) => `<span>${escapeHtml(badge.label)}</span>`).join('')}</div>` : ''}
+      ${scoreMarkup(gameState)}
+      ${businessProjectionMarkup(gameState)}
+      <div class="result__actions">
+        <button class="button button--primary" data-action="open-result-details">查看完整结算</button>
+        <button class="button button--ghost" data-action="back">← 返回上一题</button>
+        <button class="text-button" data-action="restart">重新开始并清零</button>
+      </div>
+    </section>
+    <dialog class="pixel-result-dialog" data-result-dialog aria-labelledby="pixel-result-details-title">
+      <form method="dialog" class="pixel-result-dialog__frame">
+        <header>
+          <div>
+            <p class="pixel-dossier__eyebrow">经营档案 · 完整结算</p>
+            <h2 id="pixel-result-details-title">${escapeHtml(result.title)}</h2>
+          </div>
+          <button class="pixel-result-dialog__close" type="button" data-action="close-result-details" aria-label="关闭完整结算">×</button>
+        </header>
+        <div class="pixel-result-dialog__body">
+          <section>
+            <h3>完整经营账本</h3>
+            ${costSummaryMarkup(gameState)}
+          </section>
+          ${businessProjectionMarkup(gameState)}
+          ${result.topTodos.length ? `<section class="pixel-result-todos"><h3>接下来优先做</h3><ul>${result.topTodos.map((todo) => `<li>${escapeHtml(todo.label)}</li>`).join('')}</ul></section>` : ''}
+          <p class="pixel-result-dialog__note">注册资本、待报价与变动成本没有混入已花现金。</p>
+        </div>
+      </form>
+    </dialog>
+  `
 
   return `
     <div class="pixel-layout pixel-layout--result">
       ${pixelLedgerMarkup(gameState)}
-      ${sceneMarkup(
-        completed ? 'victory' : 'result',
-        completed ? 'resolved' : 'quit',
-        visual.sceneId,
-        visual.desktopAsset,
-        visual.mobileAsset,
-        false,
-        completed && visual.source === 'option' && visual.optionId
-          ? { optionId: visual.optionId, overlay: visual.overlay, variant: visual.optionVariant ?? {} }
-          : undefined,
+      ${stageMarkup(
+        sceneMarkup(
+          completed ? 'victory' : 'result',
+          completed ? 'resolved' : 'quit',
+          visual.sceneId,
+          visual.desktopAsset,
+          visual.mobileAsset,
+          false,
+          completed && visual.source === 'option' && visual.optionId
+            ? { optionId: visual.optionId, overlay: visual.overlay, variant: visual.optionVariant ?? {} }
+            : undefined,
+        ),
+        resultPanel,
+        'pixel-stage--result',
       )}
-      <section class="pixel-dossier pixel-dossier--result">
-        <i class="pixel-dossier__clip" aria-hidden="true"></i>
-        <div class="pixel-result-stamp">${completed ? '正式上线' : '到此为止'}</div>
-        <p class="pixel-dossier__eyebrow">答完 ${result.answeredCount} 题 · 总分 ${result.score.total} / 100</p>
-        <h1>${escapeHtml(result.title)}</h1>
-        <p class="pixel-result-conclusion">${escapeHtml(result.conclusion)}</p>
-        ${result.badges.length ? `<div class="pixel-badges">${result.badges.map((badge) => `<span>${escapeHtml(badge.label)}</span>`).join('')}</div>` : ''}
-        ${scoreMarkup(gameState)}
-        ${businessProjectionMarkup(gameState)}
-        ${costSummaryMarkup(gameState)}
-        ${result.topTodos.length ? `<div class="pixel-result-todos"><strong>接下来优先做</strong><ul>${result.topTodos.map((todo) => `<li>${escapeHtml(todo.label)}</li>`).join('')}</ul></div>` : ''}
-        <div class="result__actions">
-          <button class="button button--primary" data-action="back">← 返回上一题重选</button>
-          <button class="button button--ghost" data-action="restart">重新开始并清零</button>
-        </div>
-        <div class="pixel-dossier__footer">
-          <small>注册资本、待报价与变动成本没有混入已花现金。</small>
-          <a href="../" class="edition-link">切换视觉版本</a>
-        </div>
-      </section>
     </div>
   `
 }
