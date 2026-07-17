@@ -95,7 +95,10 @@ test('选择反馈播放 resolved/quit 四态帧并冻结控件', () => {
   assert.match(resolved, /data-storyboard-frame="resolved"/)
   assert.match(resolved, /pixel-world--sequence-accept/)
   assert.match(resolved, /pixel-dossier pixel-dossier--question"[^>]* inert/)
-  assert.match(resolved, /data-pixel-impact/)
+  assert.match(resolved, /data-pixel-status-rail/)
+  assert.match(resolved, />第 1 \/ 25 题</)
+  assert.match(resolved, /data-pixel-option-feedback/)
+  assert.doesNotMatch(resolved, /data-pixel-impact/)
   assert.doesNotMatch(resolved, /路线已重算/)
   assert.doesNotMatch(resolved, /pixel-pass__copy/)
 
@@ -161,6 +164,7 @@ test('正常选择按 optionId 使用专属双端 action/resolved 单帧与安�
   assert.match(resolved, /data-visual-source="option"/)
   assert.match(resolved, /data-option-visual="launch"/)
   assert.match(resolved, /data-option-visual-overlay/)
+  assert.match(resolved, /data-pixel-option-feedback/)
   assert.match(resolved, /Codex Pro &lt;GPT&gt;/)
   assert.match(resolved, /US\$200 \/ 月/)
   assert.match(resolved, /pixel-world--sequence-accept/)
@@ -177,7 +181,7 @@ test('正常选择按 optionId 使用专属双端 action/resolved 单帧与安�
   assert.doesNotMatch(quit, /data-option-visual-overlay/)
 })
 
-test('Q5 普通选择在顶部状态条下显示即时钱与时间差量，不再弹路线重算', () => {
+test('Q5 普通选择保持题目进度栏，并在账本格闪烁与舞台安全层确认选择', () => {
   let state = restartGame(quiz)
   for (const optionId of ['launch', 'login', 'profit', 'found-company']) {
     state = chooseOption(quiz, state, optionId)
@@ -195,19 +199,22 @@ test('Q5 普通选择在顶部状态条下显示即时钱与时间差量，不�
   })
 
   const hudIndex = markup.indexOf('data-pixel-hud')
-  const impactIndex = markup.indexOf('data-pixel-impact')
+  const progressIndex = markup.indexOf('data-pixel-status-rail')
   const sceneIndex = markup.indexOf('data-pixel-scene')
-  assert.ok(hudIndex >= 0 && impactIndex > hudIndex && sceneIndex > impactIndex)
-  assert.match(markup, /已支付<\/small><strong>\+¥500<\/strong>/)
-  assert.match(markup, /工时<\/small><strong>\+4h<\/strong>/)
-  assert.match(markup, /关键路径<\/small><strong>\+2\.7天<\/strong>/)
-  assert.match(markup, /<dd>¥500(?:\.00)?<\/dd>/)
+  const feedbackIndex = markup.indexOf('data-pixel-option-feedback')
+  assert.ok(hudIndex >= 0 && progressIndex > hudIndex && sceneIndex > progressIndex && feedbackIndex > sceneIndex)
+  assert.match(markup, /pixel-hud__cell--cash pixel-hud__cell--changed" data-pixel-hud-cell="cash"/)
+  assert.match(markup, /pixel-hud__cell--time pixel-hud__cell--changed" data-pixel-hud-cell="time"/)
+  assert.match(markup, /pixel-hud__cell--path pixel-hud__cell--changed" data-pixel-hud-cell="path"/)
+  assert.match(markup, /pixel-hud__value--full"[^>]*>¥500(?:\.00)?</)
+  assert.match(markup, /pixel-hud__value--compact"[^>]*>¥500</)
   assert.match(markup, /data-visual-outcome="gpt-sacrifice"/)
-  assert.match(markup, /pixel-choice-effect--sacrifice/)
+  assert.match(markup, /\/assets\/pixel\/motion\/choice-confirm\.webp/)
+  assert.doesNotMatch(markup, /data-pixel-impact/)
   assert.doesNotMatch(markup, /路线已重算/)
 })
 
-test('Q10 选择不同开发 AI 时在 HUD 下反馈带保留具体选项与模型接线动效', () => {
+test('Q10 选择不同开发 AI 时舞台反馈保留具体选项且不占用进度栏', () => {
   let state = restartGame(quiz)
   for (const optionId of ['launch', 'guest', 'love']) state = chooseOption(quiz, state, optionId)
   assert.equal(state.currentQuestionId, 'Q10')
@@ -225,9 +232,9 @@ test('Q10 选择不同开发 AI 时在 HUD 下反馈带保留具体选项与模�
   assert.match(markup, /data-selected-option="glm-pro"/)
   assert.match(markup, /data-visual-outcome="ai-glm"/)
   assert.match(markup, /GLM 5\.2 Pro/)
-  assert.match(markup, /pixel-choice-effect--ai/)
-  assert.match(markup, /首年<\/small><strong>\+¥1,430\.40<\/strong>/)
-  assert.match(markup, /工时<\/small><strong>\+80h<\/strong>/)
+  assert.match(markup, /data-pixel-option-feedback/)
+  assert.match(markup, />第 10 \/ 25 题</)
+  assert.doesNotMatch(markup, /data-pixel-impact/)
 })
 
 test('Q19 资本门槛只显示为门槛差量并触发像素钱雨，不混入已支付', () => {
@@ -253,8 +260,9 @@ test('Q19 资本门槛只显示为门槛差量并触发像素钱雨，不混入�
     visualOutcome: option.visualOutcome,
     nextState,
   })
-  assert.match(markup, /资本门槛<\/small><strong>\+¥1,000,000<\/strong>/)
   assert.match(markup, /pixel-money-rain/)
+  assert.match(markup, /data-pixel-status-rail/)
+  assert.doesNotMatch(markup, /data-pixel-impact/)
   assert.equal(nextState.ledger.costs.paidSunk.totalCny, state.ledger.costs.paidSunk.totalCny)
 })
 
@@ -298,15 +306,39 @@ test('完成路线结果页把核心结算叠在 Q25 resolved 图上，并提供
   assert.match(markup, /data-visual-source="option"/)
   assert.match(markup, /data-option-visual="organic"/)
   assert.match(markup, /data-option-visual-frame="resolved"/)
-  assert.match(markup, /总分 \d+ \/ 100/)
+  assert.match(markup, /aria-label="总分 \d+ 分"/)
   assert.equal((markup.match(/<strong>[^<]+ \/ (?:30|25|15)<\/strong>/g) ?? []).length, 4)
   assert.match(markup, /理论月收入/)
   assert.match(markup, /¥990/)
   assert.match(markup, /pixel-stage--result/)
-  assert.match(markup, /pixel-result-panel/)
+  assert.match(markup, /pixel-result-panel" data-pixel-achievement/)
+  assert.match(markup, /pixel-score-medallion/)
+  assert.match(markup, /\/assets\/pixel\/motion\/achievement-reveal\.webp/)
+  assert.equal((markup.match(/pixel-score-grid__item/g) ?? []).length, 4)
   assert.match(markup, /data-action="open-result-details"/)
   assert.match(markup, /<dialog class="pixel-result-dialog" data-result-dialog/)
   assert.match(markup, /完整经营账本/)
   assert.match(markup, /接下来优先做/)
   assert.match(markup, /data-action="back"/)
+  assert.doesNotMatch(markup, />← 返回上一题</)
+  assert.doesNotMatch(markup, /data-option-visual-overlay/)
+})
+
+test('紧凑账本保留完整可访问值，两个返回按钮均不含箭头', () => {
+  let state = restartGame(quiz)
+  const questionMarkup = renderPixelQuestion(state, quiz, null)
+  assert.equal((questionMarkup.match(/pixel-hud__value--compact/g) ?? []).length, 4)
+  assert.equal((questionMarkup.match(/pixel-hud__value--full/g) ?? []).length, 4)
+  assert.match(questionMarkup, />返回上一题重选</)
+  assert.doesNotMatch(questionMarkup, /← 返回上一题/)
+
+  while (state.phase === 'playing') {
+    const question = quiz.questions.find((candidate) => candidate.id === state.currentQuestionId)
+    const option = question?.options.find((candidate) => candidate.outcome !== 'exit')
+    assert.ok(option)
+    state = chooseOption(quiz, state, option.id)
+  }
+  const resultMarkup = renderPixelResult(state, quiz)
+  assert.match(resultMarkup, />返回上一题</)
+  assert.doesNotMatch(resultMarkup, /← 返回上一题/)
 })

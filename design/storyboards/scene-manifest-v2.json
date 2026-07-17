@@ -1034,15 +1034,15 @@
         "file": "web/public/assets/pixel/scenes-v2/Q11-desktop.webp",
         "width": 1536,
         "height": 1024,
-        "bytes": 320908,
-        "sha256": "455840752a262f1038d506703b42f5bd0005ea9bf09c92988c4e51f72fdcafaa"
+        "bytes": 1418760,
+        "sha256": "e8c26a987bd0f37a47455be5a1e2318bf6a7873e96e9ba47025252d692eb2095"
       },
       "mobile": {
         "file": "web/public/assets/pixel/scenes-v2/Q11-mobile.webp",
         "width": 1024,
         "height": 1536,
-        "bytes": 313776,
-        "sha256": "19e39488dcd6863ac4045c8567c48a6ea6211400829eb822d3959cb30e629581"
+        "bytes": 1445518,
+        "sha256": "d6287d1f9c107b1f99ff782c57833b218c120061fd94e4e68a2ced037b58798c"
       },
       "optionVariants": {
         "no-runtime-ai": {
