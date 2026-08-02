@@ -172,11 +172,24 @@ function scheduleOptionFramePreload(question: QuizQuestion): void {
   globalThis.setTimeout(preload, 350)
 }
 
+function placePlatformSoundToggle(): void {
+  if (document.body.dataset.platform !== 'xhs-tool') return
+  const toggle = app.querySelector<HTMLButtonElement>('.sound-toggle')
+  const panel = app.querySelector<HTMLElement>('.arcade-sheet, .arcade-result')
+  if (!toggle || !panel) return
+  const row = document.createElement('div')
+  row.className = 'xhs-sound-row'
+  row.setAttribute('aria-label', '音乐控制')
+  row.append(toggle)
+  panel.prepend(row)
+}
+
 function render(): void {
   app.dataset.phase = started ? state.phase : 'intro'
   if (!started) app.innerHTML = renderIntro()
   else if (state.phase === 'playing') app.innerHTML = renderQuestion()
   else app.innerHTML = renderResult()
+  placePlatformSoundToggle()
 
   if (!started) preloadQuestionScene(quiz.definition.startQuestionId)
   else if (state.phase === 'playing' && !transition) {
