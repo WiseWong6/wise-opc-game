@@ -105,9 +105,9 @@ export const quizDefinition: QuizDefinition = {
             {
               "type": "effort",
               "bucket": "founderHours",
-              "hours": 0.5,
+              "hours": 3,
               "track": "development",
-              "label": "确认上线目标"
+              "label": "思考上线目标（0.5天）"
             }
           ]
         },
@@ -199,6 +199,20 @@ export const quizDefinition: QuizDefinition = {
               "value": true
             },
             {
+              "type": "effort",
+              "bucket": "founderHours",
+              "hours": 3,
+              "track": "development",
+              "label": "登录接入调研（0.5天）"
+            },
+            {
+              "type": "effort",
+              "bucket": "founderHours",
+              "hours": 3,
+              "track": "development",
+              "label": "登录 API 接通（0.5天）"
+            },
+            {
               "type": "metric",
               "key": "score.business",
               "value": 2
@@ -283,7 +297,7 @@ export const quizDefinition: QuizDefinition = {
       "options": [
         {
           "id": "profit",
-          "label": "一个月200刀，我不赚钱谁赚钱？",
+          "label": "GPT Pro 1个月200刀，我不赚钱谁赚钱？",
           "effects": [
             {
               "type": "set-fact",
@@ -381,9 +395,9 @@ export const quizDefinition: QuizDefinition = {
             {
               "type": "effort",
               "bucket": "founderHours",
-              "hours": 2,
+              "hours": 6,
               "track": "company",
-              "label": "确认一人公司方案"
+              "label": "一人公司信息调研（1天）"
             }
           ]
         },
@@ -460,14 +474,7 @@ export const quizDefinition: QuizDefinition = {
               "track": "company",
               "days": 2,
               "blocking": true,
-              "label": "公司注册办理"
-            },
-            {
-              "type": "effort",
-              "bucket": "founderHours",
-              "hours": 4,
-              "track": "company",
-              "label": "注册材料准备"
+              "label": "公司注册办理（总计2天）"
             },
             {
               "type": "metric",
@@ -553,6 +560,13 @@ export const quizDefinition: QuizDefinition = {
               "value": "desk"
             },
             {
+              "type": "effort",
+              "bucket": "founderHours",
+              "hours": 6,
+              "track": "company",
+              "label": "租赁工位与签约（1天）"
+            },
+            {
               "type": "money",
               "id": "q06-desk-first-year",
               "bucket": "firstYearCommitted",
@@ -591,6 +605,13 @@ export const quizDefinition: QuizDefinition = {
               "type": "set-fact",
               "key": "registeredAddress",
               "value": "hosted"
+            },
+            {
+              "type": "effort",
+              "bucket": "founderHours",
+              "hours": 12,
+              "track": "company",
+              "label": "挂靠地址与材料（2天）"
             },
             {
               "type": "money",
@@ -686,6 +707,27 @@ export const quizDefinition: QuizDefinition = {
               "value": true
             },
             {
+              "type": "effort",
+              "bucket": "founderHours",
+              "hours": 3,
+              "track": "company",
+              "label": "选择银行（0.5天）"
+            },
+            {
+              "type": "effort",
+              "bucket": "founderHours",
+              "hours": 3,
+              "track": "company",
+              "label": "办理开户（0.5天）"
+            },
+            {
+              "type": "wait",
+              "track": "company",
+              "days": 7,
+              "blocking": true,
+              "label": "拿到开户许可证（7天）"
+            },
+            {
               "type": "money",
               "id": "q07-bank-first-year",
               "bucket": "firstYearCommitted",
@@ -723,7 +765,7 @@ export const quizDefinition: QuizDefinition = {
         },
         {
           "id": "stop-before-bank",
-          "label": "还没赚钱就已经花了x（前面累加金额）了吗？？？算了",
+          "label": "还没赚钱，首年总投入已经到 {{spent}} 了吗？？？算了",
           "outcome": "exit",
           "exitTitle": "沉没成本观察员",
           "effects": []
@@ -737,7 +779,7 @@ export const quizDefinition: QuizDefinition = {
       "prompt": "总裁，公户办好了，请问需要申请什么支付呢",
       "defaultNextQuestionId": "Q09",
       "factNotes": [
-        "¥300 为本局微信相关认证预算口径；支付手续费与适用条件需按支付机构当前规则核实。"
+        "¥300 为本局微信相关认证预算口径；选择后计入首年总投入，并按 12 个月折算为月均投入；支付手续费与适用条件需按支付机构当前规则核实。"
       ],
       "visual": {
         "sceneId": "Q08",
@@ -807,12 +849,19 @@ export const quizDefinition: QuizDefinition = {
       "options": [
         {
           "id": "wechat-pay",
-          "label": "微信支付，认证费300/年",
+          "label": "微信支付，认证费300/年（折合{{optionMonthlyAverageInvestment}}/月）",
           "effects": [
             {
               "type": "set-fact",
               "key": "paymentChannels",
               "value": "wechat"
+            },
+            {
+              "type": "effort",
+              "bucket": "founderHours",
+              "hours": 36,
+              "track": "development",
+              "label": "微信支付申请与接口调通（6天）"
             },
             {
               "type": "money",
@@ -871,6 +920,13 @@ export const quizDefinition: QuizDefinition = {
               "value": "alipay"
             },
             {
+              "type": "effort",
+              "bucket": "founderHours",
+              "hours": 24,
+              "track": "development",
+              "label": "支付宝申请与接口调通（4天）"
+            },
+            {
               "type": "money",
               "id": "q08-payment-fee",
               "bucket": "variable",
@@ -895,12 +951,19 @@ export const quizDefinition: QuizDefinition = {
         },
         {
           "id": "both",
-          "label": "小孩子才做选择，我全都要",
+          "label": "小孩子才做选择，我全都要（微信认证折合{{optionMonthlyAverageInvestment}}/月）",
           "effects": [
             {
               "type": "set-fact",
               "key": "paymentChannels",
               "value": "both"
+            },
+            {
+              "type": "effort",
+              "bucket": "founderHours",
+              "hours": 36,
+              "track": "development",
+              "label": "微信与支付宝申请、接口调通（按较长路线6天）"
             },
             {
               "type": "money",
@@ -1027,6 +1090,13 @@ export const quizDefinition: QuizDefinition = {
               "value": "agency"
             },
             {
+              "type": "effort",
+              "bucket": "founderHours",
+              "hours": 12,
+              "track": "company",
+              "label": "选择代理记账（2天）"
+            },
+            {
               "type": "money",
               "id": "q09-bookkeeping-first-year",
               "bucket": "firstYearCommitted",
@@ -1080,6 +1150,13 @@ export const quizDefinition: QuizDefinition = {
             },
             {
               "type": "effort",
+              "bucket": "founderHours",
+              "hours": 180,
+              "track": "company",
+              "label": "自己学习并启动记账（30天）"
+            },
+            {
+              "type": "effort",
               "bucket": "recurringMonthlyHours",
               "hours": 4,
               "track": "company",
@@ -1119,8 +1196,8 @@ export const quizDefinition: QuizDefinition = {
       "prompt": "心心念念第一个产品，肯定要拉满啊，你选什么模型？",
       "defaultNextQuestionId": "Q11",
       "factNotes": [
-        "GPT 的 200 美元/月按国家外汇管理局 2026-07-16 人民币汇率中间价 1 美元 = ¥6.7909 折算：约 ¥1,358.18/月、¥16,298.16/年；实际支付以账单汇率为准。",
-        "GLM 使用截图中的个人 Pro 连续包年口径：¥119.2/月，次年度续费 ¥1,430.4；套餐价格应在购买时再次核对。",
+        "GPT 的 200 美元/月按国家外汇管理局 2026-07-16 人民币汇率中间价 1 美元 = ¥6.7909 折算：约 ¥1,358.2/月、¥16,298.2/年；实际支付以账单汇率为准。",
+        "GLM Coding Pro 按月付 ¥149/月计，首年约 ¥1,788（149 × 12）；官方另有连续包季 9 折、连续包年 8 折（约 ¥1,430.4/年）优惠，套餐价格应在购买时再次核对。",
         "开发工具订阅和产品运行时模型 API 成本分开记账。"
       ],
       "visual": {
@@ -1161,8 +1238,8 @@ export const quizDefinition: QuizDefinition = {
             },
             "overlay": {
               "eyebrow": "Coding AI",
-              "title": "GLM 5.2 Pro",
-              "detail": "连续包年 ¥1,430.4/年",
+              "title": "GLM 5.2",
+              "detail": "¥149/月",
               "tone": "brand"
             }
           },
@@ -1177,8 +1254,8 @@ export const quizDefinition: QuizDefinition = {
             },
             "overlay": {
               "eyebrow": "Coding AI",
-              "title": "Kimi Code 2.7",
-              "detail": "约 ¥200/月",
+              "title": "Kimi K3",
+              "detail": "约 ¥699/月",
               "tone": "brand"
             }
           },
@@ -1241,9 +1318,9 @@ export const quizDefinition: QuizDefinition = {
             {
               "type": "effort",
               "bucket": "founderHours",
-              "hours": 80,
+              "hours": 18,
               "track": "development",
-              "label": "MVP 开发"
+              "label": "GPT 路线 MVP 开发（3天）"
             },
             {
               "type": "metric",
@@ -1254,7 +1331,7 @@ export const quizDefinition: QuizDefinition = {
         },
         {
           "id": "glm-pro",
-          "label": "GLM 5.2 Pro，连续包年 ¥1,430.4/年",
+          "label": "GLM 5.2，¥149/月",
           "visualOutcome": "ai-glm",
           "effects": [
             {
@@ -1266,32 +1343,25 @@ export const quizDefinition: QuizDefinition = {
               "type": "money",
               "id": "q10-glm-first-year",
               "bucket": "firstYearCommitted",
-              "amount": 1430.4,
+              "amount": 1788,
               "currency": "CNY",
-              "label": "GLM Pro 连续包年",
-              "sourceType": "套餐截图",
-              "chargeTiming": "现在支付",
+              "label": "GLM Coding Pro 首年（¥149/月 × 12）",
+              "sourceType": "官方价格页",
+              "chargeTiming": "按月支付",
               "refundable": true,
-              "priceDate": "2026-07-16"
+              "priceDate": "2026-07-29"
             },
             {
               "type": "money",
               "id": "q10-glm-renewal",
               "bucket": "renewal",
-              "amount": 1430.4,
+              "amount": 1788,
               "currency": "CNY",
-              "label": "GLM Pro 次年度续费",
-              "sourceType": "套餐截图",
-              "chargeTiming": "次年续费",
+              "label": "GLM Coding Pro 次年（¥149/月 × 12）",
+              "sourceType": "官方价格页",
+              "chargeTiming": "按月续费",
               "refundable": true,
-              "priceDate": "2026-07-16"
-            },
-            {
-              "type": "effort",
-              "bucket": "founderHours",
-              "hours": 80,
-              "track": "development",
-              "label": "MVP 开发"
+              "priceDate": "2026-07-29"
             },
             {
               "type": "metric",
@@ -1302,7 +1372,7 @@ export const quizDefinition: QuizDefinition = {
         },
         {
           "id": "kimi-code",
-          "label": "Kimi Code 2.7,大概是200元/月",
+          "label": "Kimi K3,大概是699元/月",
           "visualOutcome": "ai-kimi",
           "effects": [
             {
@@ -1314,32 +1384,25 @@ export const quizDefinition: QuizDefinition = {
               "type": "money",
               "id": "q10-kimi-first-year",
               "bucket": "firstYearCommitted",
-              "amount": 2400,
+              "amount": 8388,
               "currency": "CNY",
-              "label": "Kimi Code 年化预算",
+              "label": "Kimi K3 年化预算（¥699/月）",
               "sourceType": "用户估算",
               "chargeTiming": "按月支付",
               "refundable": true,
-              "priceDate": "2026-07-16"
+              "priceDate": "2026-07-28"
             },
             {
               "type": "money",
               "id": "q10-kimi-renewal",
               "bucket": "renewal",
-              "amount": 2400,
+              "amount": 8388,
               "currency": "CNY",
-              "label": "Kimi Code 次年年化预算",
+              "label": "Kimi K3 次年年化预算（¥699/月）",
               "sourceType": "用户估算",
               "chargeTiming": "按月续费",
               "refundable": true,
-              "priceDate": "2026-07-16"
-            },
-            {
-              "type": "effort",
-              "bucket": "founderHours",
-              "hours": 80,
-              "track": "development",
-              "label": "MVP 开发"
+              "priceDate": "2026-07-28"
             },
             {
               "type": "metric",
@@ -1357,13 +1420,6 @@ export const quizDefinition: QuizDefinition = {
               "type": "set-fact",
               "key": "codingModel",
               "value": "free-tools"
-            },
-            {
-              "type": "effort",
-              "bucket": "founderHours",
-              "hours": 80,
-              "track": "development",
-              "label": "MVP 开发"
             },
             {
               "type": "todo",
@@ -1473,6 +1529,13 @@ export const quizDefinition: QuizDefinition = {
               "value": true
             },
             {
+              "type": "effort",
+              "bucket": "founderHours",
+              "hours": 18,
+              "track": "development",
+              "label": "运行时 AI 接入、认证与材料（3天）"
+            },
+            {
               "type": "money",
               "id": "q11-model-api",
               "bucket": "variable",
@@ -1574,6 +1637,13 @@ export const quizDefinition: QuizDefinition = {
           "label": "300 块小意思",
           "effects": [
             {
+              "type": "effort",
+              "bucket": "founderHours",
+              "hours": 6,
+              "track": "development",
+              "label": "域名、SSL 与 DNS 配置（1天）"
+            },
+            {
               "type": "money",
               "id": "q12-domain-first-year",
               "bucket": "firstYearCommitted",
@@ -1582,6 +1652,18 @@ export const quizDefinition: QuizDefinition = {
               "label": "域名、SSL 和 DNS 首次预算",
               "sourceType": "用户口径",
               "chargeTiming": "上线前支付",
+              "refundable": true,
+              "priceDate": "2026-07-16"
+            },
+            {
+              "type": "money",
+              "id": "q12-domain-renewal",
+              "bucket": "renewal",
+              "amount": 300,
+              "currency": "CNY",
+              "label": "域名、SSL 和 DNS 次年续费预算",
+              "sourceType": "用户口径",
+              "chargeTiming": "次年续费",
               "refundable": true,
               "priceDate": "2026-07-16"
             },
@@ -1675,6 +1757,13 @@ export const quizDefinition: QuizDefinition = {
               "value": "sms"
             },
             {
+              "type": "effort",
+              "bucket": "founderHours",
+              "hours": 6,
+              "track": "development",
+              "label": "短信登录申请、接入与测试（1天）"
+            },
+            {
               "type": "money",
               "id": "q13-sms-pack",
               "bucket": "firstYearCommitted",
@@ -1727,6 +1816,13 @@ export const quizDefinition: QuizDefinition = {
               "type": "set-fact",
               "key": "hasInteractiveFeatures",
               "value": false
+            },
+            {
+              "type": "effort",
+              "bucket": "founderHours",
+              "hours": 12,
+              "track": "development",
+              "label": "移除登录与商业化功能（2天）"
             },
             {
               "type": "set-fact",
@@ -1842,6 +1938,13 @@ export const quizDefinition: QuizDefinition = {
               "value": "1c2g"
             },
             {
+              "type": "effort",
+              "bucket": "founderHours",
+              "hours": 12,
+              "track": "development",
+              "label": "低配服务器购买、配置与部署（2天）"
+            },
+            {
               "type": "money",
               "id": "q14-1c2g",
               "bucket": "firstYearCommitted",
@@ -1867,6 +1970,13 @@ export const quizDefinition: QuizDefinition = {
               "type": "set-fact",
               "key": "serverSpec",
               "value": "2c4g"
+            },
+            {
+              "type": "effort",
+              "bucket": "founderHours",
+              "hours": 12,
+              "track": "development",
+              "label": "基础服务器购买、配置与部署（2天）"
             },
             {
               "type": "money",
@@ -1977,6 +2087,13 @@ export const quizDefinition: QuizDefinition = {
               "value": true
             },
             {
+              "type": "effort",
+              "bucket": "founderHours",
+              "hours": 6,
+              "track": "development",
+              "label": "系统盘与数据盘配置、备份（1天）"
+            },
+            {
               "type": "money",
               "id": "q15-disk-first-year",
               "bucket": "firstYearCommitted",
@@ -2020,6 +2137,13 @@ export const quizDefinition: QuizDefinition = {
               "type": "set-fact",
               "key": "dataDisk",
               "value": false
+            },
+            {
+              "type": "effort",
+              "bucket": "founderHours",
+              "hours": 3,
+              "track": "development",
+              "label": "系统盘与备份方案配置（0.5天）"
             },
             {
               "type": "money",
@@ -2112,6 +2236,13 @@ export const quizDefinition: QuizDefinition = {
           "label": "3兆/年，724.2元/年",
           "effects": [
             {
+              "type": "effort",
+              "bucket": "founderHours",
+              "hours": 3,
+              "track": "development",
+              "label": "3M带宽购买与接通（0.5天）"
+            },
+            {
               "type": "money",
               "id": "q16-bandwidth-first-year",
               "bucket": "firstYearCommitted",
@@ -2144,7 +2275,7 @@ export const quizDefinition: QuizDefinition = {
         },
         {
           "id": "quit-after-spending",
-          "label": "不玩了，但你注册公司啥的已经花了x元（前面计算），真的不玩？",
+          "label": "不玩了，但首年总投入已经到 {{spent}}，真的不玩？",
           "outcome": "exit",
           "exitTitle": "带宽闸门刹车手",
           "effects": []
@@ -2204,18 +2335,11 @@ export const quizDefinition: QuizDefinition = {
               "value": true
             },
             {
-              "type": "effort",
-              "bucket": "founderHours",
-              "hours": 6,
-              "track": "filing",
-              "label": "网站备案材料准备"
-            },
-            {
               "type": "wait",
               "track": "filing",
               "days": 7,
               "blocking": true,
-              "label": "工信部备案审核"
+              "label": "工信部备案全流程（7天）"
             },
             {
               "type": "metric",
@@ -2291,18 +2415,11 @@ export const quizDefinition: QuizDefinition = {
               "value": true
             },
             {
-              "type": "effort",
-              "bucket": "founderHours",
-              "hours": 4,
-              "track": "filing",
-              "label": "公安联网备案材料准备"
-            },
-            {
               "type": "wait",
               "track": "filing",
               "days": 7,
               "blocking": true,
-              "label": "公安联网备案办理"
+              "label": "公安联网备案全流程（7天）"
             },
             {
               "type": "metric",
@@ -2332,7 +2449,7 @@ export const quizDefinition: QuizDefinition = {
       "prompt": "老师，备案都通过了，该办证了，你的网站经营范围是什么？这决定要不要花100万",
       "defaultNextQuestionId": "Q20",
       "factNotes": [
-        "注册资本不是当前已花费用。",
+        "平台路线默认已有100万注册资本门槛资金，并计入本局首年总投入；它不是工信部备案费用。",
         "许可、中介和人员成本全部标记为待确认，不直接扣款。",
         "经营许可是否适用应按实际业务形态和属地要求核实。"
       ],
@@ -2411,6 +2528,13 @@ export const quizDefinition: QuizDefinition = {
               "value": "self-operated"
             },
             {
+              "type": "effort",
+              "bucket": "founderHours",
+              "hours": 12,
+              "track": "compliance",
+              "label": "自营路线许可调研（2天）"
+            },
+            {
               "type": "todo",
               "id": "verify-self-operated-license",
               "label": "按自营路线核实经营许可适用性",
@@ -2431,6 +2555,13 @@ export const quizDefinition: QuizDefinition = {
               "type": "set-fact",
               "key": "businessScope",
               "value": "self-published"
+            },
+            {
+              "type": "effort",
+              "bucket": "founderHours",
+              "hours": 12,
+              "track": "compliance",
+              "label": "自行发布路线许可调研（2天）"
             },
             {
               "type": "todo",
@@ -2456,14 +2587,21 @@ export const quizDefinition: QuizDefinition = {
               "value": "platform"
             },
             {
+              "type": "effort",
+              "bucket": "founderHours",
+              "hours": 12,
+              "track": "compliance",
+              "label": "平台经营许可调研（2天）"
+            },
+            {
               "type": "money",
               "id": "q19-capital-threshold",
               "bucket": "capitalRequirement",
               "amount": 1000000,
               "currency": "CNY",
-              "label": "经营许可注册资本门槛",
-              "sourceType": "规则核实项",
-              "chargeTiming": "资格门槛",
+              "label": "ICP 经营许可注册资本门槛",
+              "sourceType": "用户口径 + 规则核实项",
+              "chargeTiming": "资格门槛，计入首年总投入",
               "refundable": false,
               "priceDate": "2026-07-16"
             },
@@ -2611,17 +2749,17 @@ export const quizDefinition: QuizDefinition = {
               "value": "self"
             },
             {
+              "type": "effort",
+              "bucket": "founderHours",
+              "hours": 42,
+              "track": "compliance",
+              "label": "自行安全评估（7天）"
+            },
+            {
               "type": "todo",
               "id": "self-security-assessment",
               "label": "自行开展安全评估",
               "timing": "before-launch"
-            },
-            {
-              "type": "effort",
-              "bucket": "founderHours",
-              "hours": 24,
-              "track": "compliance",
-              "label": "自行安全评估"
             },
             {
               "type": "metric",
@@ -2645,12 +2783,19 @@ export const quizDefinition: QuizDefinition = {
               "value": "third-party"
             },
             {
+              "type": "effort",
+              "bucket": "founderHours",
+              "hours": 42,
+              "track": "compliance",
+              "label": "第三方安全评估（7天）"
+            },
+            {
               "type": "money",
               "id": "q20-third-party-assessment",
-              "bucket": "pendingQuote",
+              "bucket": "firstYearCommitted",
               "amount": 12000,
               "currency": "CNY",
-              "label": "第三方安全评估当前询价",
+              "label": "第三方安全评估一次费用",
               "sourceType": "用户询价",
               "chargeTiming": "确认后支付",
               "refundable": true,
@@ -2741,14 +2886,21 @@ export const quizDefinition: QuizDefinition = {
               "value": "level-two"
             },
             {
+              "type": "effort",
+              "bucket": "founderHours",
+              "hours": 84,
+              "track": "compliance",
+              "label": "等保二级采购部署、评估、整改与复评（14天）"
+            },
+            {
               "type": "money",
               "id": "q21-level-two",
-              "bucket": "pendingQuote",
+              "bucket": "firstYearCommitted",
               "amount": 50000,
               "currency": "CNY",
-              "label": "等保二级历史压力预算",
+              "label": "等保二级测评与整改一次预算",
               "sourceType": "用户历史口径",
-              "chargeTiming": "定级后确认",
+              "chargeTiming": "定级后支付",
               "refundable": true,
               "priceDate": "2026-07-16"
             },
@@ -2775,14 +2927,21 @@ export const quizDefinition: QuizDefinition = {
               "value": "level-three"
             },
             {
+              "type": "effort",
+              "bucket": "founderHours",
+              "hours": 126,
+              "track": "compliance",
+              "label": "等保三级采购部署、评估、整改与复评（21天）"
+            },
+            {
               "type": "money",
               "id": "q21-level-three",
-              "bucket": "pendingQuote",
+              "bucket": "firstYearCommitted",
               "amount": 100000,
               "currency": "CNY",
-              "label": "等保三级历史压力预算",
+              "label": "等保三级测评与整改一次预算",
               "sourceType": "用户历史口径",
-              "chargeTiming": "定级后确认",
+              "chargeTiming": "定级后支付",
               "refundable": true,
               "priceDate": "2026-07-16"
             },
@@ -2894,9 +3053,9 @@ export const quizDefinition: QuizDefinition = {
             {
               "type": "effort",
               "bucket": "founderHours",
-              "hours": 6,
+              "hours": 18,
               "track": "marketing",
-              "label": "确认用户、场景、需求和竞争关系"
+              "label": "确认用户、场景、需求和竞争关系（3天）"
             },
             {
               "type": "metric",
@@ -2923,9 +3082,9 @@ export const quizDefinition: QuizDefinition = {
             {
               "type": "effort",
               "bucket": "founderHours",
-              "hours": 12,
+              "hours": 18,
               "track": "marketing",
-              "label": "差异化研究"
+              "label": "差异化研究（3天）"
             },
             {
               "type": "metric",
@@ -2952,16 +3111,9 @@ export const quizDefinition: QuizDefinition = {
             {
               "type": "effort",
               "bucket": "founderHours",
-              "hours": 24,
+              "hours": 42,
               "track": "marketing",
-              "label": "用户调研"
-            },
-            {
-              "type": "wait",
-              "track": "marketing",
-              "days": 4,
-              "blocking": false,
-              "label": "用户调研周期"
+              "label": "用户、场景、需求和竞争关系调研（7天）"
             },
             {
               "type": "metric",
@@ -3139,10 +3291,10 @@ export const quizDefinition: QuizDefinition = {
       "id": "Q24",
       "number": 24,
       "chapterId": "business",
-      "prompt": "那用户会花多少钱，为你付费呢？你现在已经花了xx元，按照每用户每月算，大概有几种价格",
+      "prompt": "那用户会花多少钱，为你付费呢？你的首年总投入是 {{spent}}。按照上一关选择的 {{users}} 个用户、每用户每月计费，大概有这几种价格：",
       "defaultNextQuestionId": "Q25",
       "factNotes": [
-        "价格档位同分；收入仅显示理论流水，不在变动成本不完整时伪装成利润。"
+        "预计每月毛利（粗算）＝用户数 × 月费 − 首年总投入 ÷ 12；未扣模型用量、支付手续费、税费、获客和流失。"
       ],
       "visual": {
         "sceneId": "Q24",
@@ -3212,8 +3364,15 @@ export const quizDefinition: QuizDefinition = {
       "options": [
         {
           "id": "price-9-9",
-          "label": "9.9元，一个月一杯咖啡钱不贵吧",
+          "label": "9.9元，一个月一杯咖啡钱不贵吧｜预计每月毛利 {{monthlyGrossProfit}}",
           "effects": [
+            {
+              "type": "effort",
+              "bucket": "founderHours",
+              "hours": 42,
+              "track": "marketing",
+              "label": "9.9元定价验证（7天）"
+            },
             {
               "type": "metric",
               "key": "monthlyPriceCny",
@@ -3233,8 +3392,15 @@ export const quizDefinition: QuizDefinition = {
         },
         {
           "id": "price-19-9",
-          "label": "19.9元，一个月两杯咖啡也还好？",
+          "label": "19.9元，一个月两杯咖啡也还好？｜预计每月毛利 {{monthlyGrossProfit}}",
           "effects": [
+            {
+              "type": "effort",
+              "bucket": "founderHours",
+              "hours": 42,
+              "track": "marketing",
+              "label": "19.9元定价验证（7天）"
+            },
             {
               "type": "metric",
               "key": "monthlyPriceCny",
@@ -3254,8 +3420,15 @@ export const quizDefinition: QuizDefinition = {
         },
         {
           "id": "price-29-9",
-          "label": "29.9元，友情提示，美图一个月大概三十",
+          "label": "29.9元，友情提示，美图一个月大概三十｜预计每月毛利 {{monthlyGrossProfit}}",
           "effects": [
+            {
+              "type": "effort",
+              "bucket": "founderHours",
+              "hours": 42,
+              "track": "marketing",
+              "label": "29.9元定价验证（7天）"
+            },
             {
               "type": "metric",
               "key": "monthlyPriceCny",
@@ -3366,13 +3539,6 @@ export const quizDefinition: QuizDefinition = {
               "type": "set-fact",
               "key": "acquisition",
               "value": "organic"
-            },
-            {
-              "type": "effort",
-              "bucket": "recurringMonthlyHours",
-              "hours": 40,
-              "track": "marketing",
-              "label": "内容、社群与口碑运营"
             },
             {
               "type": "metric",
@@ -3517,15 +3683,6 @@ export const quizDefinition: QuizDefinition = {
           "equals": false
         },
         "priority": 90
-      },
-      {
-        "id": "one-person-company",
-        "label": "一人四岗董事长",
-        "when": {
-          "fact": "hasCompany",
-          "equals": true
-        },
-        "priority": 80
       },
       {
         "id": "ai-runtime",

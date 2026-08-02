@@ -279,6 +279,17 @@ export interface QuizLedger {
   todos: TodoItem[]
 }
 
+export interface FinancialSummary {
+  firstYearInvestmentCny: number
+  monthlyAverageInvestmentCny: number
+  users: number | null
+  monthlyPriceCny: number | null
+  monthlyRevenueCny: number | null
+  annualRevenueCny: number | null
+  monthlyGrossProfitEstimateCny: number | null
+  hasUnpricedFirstYearInvestment: boolean
+}
+
 export interface ScoreDimensionResult {
   earnedWeight: number
   availableWeight: number
@@ -783,9 +794,7 @@ export function buildResult(quiz: QuizDefinition, state: QuizState): QuizResult 
     stoppedAtQuestionId: exited ? lastAnswer?.questionId ?? null : null,
     title: exited ? resolveExitTitle(quiz, state) : scoreTitle.title,
     titleKind: exited ? 'exit' : 'score',
-    conclusion: exited
-      ? '现在停，不会再产生新的承诺；已经支付的费用不会穿越回来。'
-      : scoreTitle.conclusion ?? '通关不是结束，而是终于可以开始经营产品。',
+    conclusion: exited ? '' : scoreTitle.conclusion ?? '',
     badges,
     score,
     ledger: cloneLedger(state.ledger),
@@ -894,8 +903,80 @@ export function formatCurrency(amount: number, currency = 'CNY'): string {
   return new Intl.NumberFormat('zh-CN', {
     style: 'currency',
     currency,
-    maximumFractionDigits: 2,
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
   }).format(amount)
+}
+
+function finiteNumber(value: ScalarValue | undefined): number | null {
+  if (value === null || value === undefined || value === '' || typeof value === 'boolean') return null
+  const number = Number(value)
+  return Number.isFinite(number) ? number : null
+}
+
+export function optionMonthlyPrice(option: QuizOption): number | null {
+  const effect = option.effects.find(
+    (candidate): candidate is MetricEffect =>
+      candidate.type === 'metric'
+      && candidate.key === 'monthlyPriceCny',
+  )
+  return effect ? finiteNumber(effect.value) : null
+}
+
+export function optionMonthlyAverageInvestmentCny(option: QuizOption): number | null {
+  let firstYearInvestmentCny = 0
+  let hasFixedFirstYearInvestment = false
+  for (const effect of option.effects) {
+    if (
+      effect.type !== 'money'
+      || (effect.bucket !== 'paidSunk' && effect.bucket !== 'firstYearCommitted')
+    ) continue
+    if (
+      effect.amount === null
+      || effect.amount === undefined
+      || (effect.currency ?? 'CNY') !== 'CNY'
+    ) return null
+    firstYearInvestmentCny += effect.amount
+    hasFixedFirstYearInvestment = true
+  }
+  return hasFixedFirstYearInvestment ? firstYearInvestmentCny / 12 : null
+}
+
+export function summarizeFinancials(
+  ledger: QuizLedger,
+  metrics: Record<string, ScalarValue> = {},
+  monthlyPriceOverride?: number,
+): FinancialSummary {
+  const firstYearInvestmentCny =
+    ledger.costs.paidSunk.totalCny
+    + ledger.costs.firstYearCommitted.totalCny
+    + ledger.costs.capitalRequirement.totalCny
+  const users = finiteNumber(metrics.users)
+  const monthlyPriceCny = Number.isFinite(monthlyPriceOverride)
+    ? monthlyPriceOverride ?? null
+    : finiteNumber(metrics.monthlyPriceCny)
+  const monthlyRevenueCny = users !== null && monthlyPriceCny !== null
+    ? users * monthlyPriceCny
+    : null
+
+  return {
+    firstYearInvestmentCny,
+    monthlyAverageInvestmentCny: firstYearInvestmentCny / 12,
+    users,
+    monthlyPriceCny,
+    monthlyRevenueCny,
+    annualRevenueCny: monthlyRevenueCny === null ? null : monthlyRevenueCny * 12,
+    monthlyGrossProfitEstimateCny:
+      monthlyRevenueCny === null
+        ? null
+        : monthlyRevenueCny - (firstYearInvestmentCny / 12),
+    hasUnpricedFirstYearInvestment:
+      ledger.costs.paidSunk.hasUnknownAmount
+      || ledger.costs.firstYearCommitted.hasUnknownAmount
+      || ledger.costs.capitalRequirement.hasUnknownAmount
+      || ledger.costs.pendingQuote.items.length > 0
+      || ledger.costs.variable.hasUnknownAmount,
+  }
 }
 
 function formatCostBucket(bucket: CostBucketLedger): string {
@@ -923,11 +1004,34 @@ function formatCostBucket(bucket: CostBucketLedger): string {
   return parts.join(' + ')
 }
 
-export function interpolateQuizText(value: string, ledger: QuizLedger): string {
-  const committed = ledger.costs.paidSunk.totalCny + ledger.costs.firstYearCommitted.totalCny
-  const amount = formatCurrency(committed)
-  return ['{{spent}}', 'x（前面累加金额）', 'x元（前面计算）', 'xx元']
-    .reduce((text, token) => text.split(token).join(amount), value)
+export function interpolateQuizText(
+  value: string,
+  ledger: QuizLedger,
+  metrics: Record<string, ScalarValue> = {},
+  monthlyPriceOverride?: number,
+  optionMonthlyAverageInvestmentOverride?: number,
+): string {
+  const summary = summarizeFinancials(ledger, metrics, monthlyPriceOverride)
+  const amount = formatCurrency(summary.firstYearInvestmentCny)
+  const users = summary.users === null
+    ? '—'
+    : new Intl.NumberFormat('zh-CN').format(summary.users)
+  const monthlyGrossProfit = summary.monthlyGrossProfitEstimateCny === null
+    ? '—'
+    : formatCurrency(summary.monthlyGrossProfitEstimateCny)
+  const optionMonthlyAverageInvestment = Number.isFinite(optionMonthlyAverageInvestmentOverride)
+    ? formatCurrency(optionMonthlyAverageInvestmentOverride ?? 0)
+    : '—'
+
+  return [
+    ['{{spent}}', amount],
+    ['{{users}}', users],
+    ['{{monthlyGrossProfit}}', monthlyGrossProfit],
+    ['{{optionMonthlyAverageInvestment}}', optionMonthlyAverageInvestment],
+    ['x（前面累加金额）', amount],
+    ['x元（前面计算）', amount],
+    ['xx元', amount],
+  ].reduce((text, [token, replacement]) => text.split(token).join(replacement), value)
 }
 
 export function formatLedger(ledger: QuizLedger): Record<CostBucket, string> & { founderTime: string; criticalPath: string } {

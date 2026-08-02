@@ -7,3 +7,4 @@ output/
 research/
 project.private.config.json
 *.log
+.hilo/

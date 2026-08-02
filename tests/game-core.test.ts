@@ -6,6 +6,7 @@ import {
   formatLedger,
   goBack,
   interpolateQuizText,
+  optionMonthlyAverageInvestmentCny,
   restartGame,
   validateQuizDefinition,
   type Effect,
@@ -115,8 +116,8 @@ test('外币订阅保留原币展示，未定价项目仍单独标记待确认',
   const state = chooseOption(quiz, restartGame(quiz), 'subscribe')
   const formatted = formatLedger(state.ledger)
 
-  assert.match(formatted.firstYearCommitted, /¥300\.00/)
-  assert.match(formatted.firstYearCommitted, /US\$2,400\.00/)
+  assert.match(formatted.firstYearCommitted, /¥300\.0/)
+  assert.match(formatted.firstYearCommitted, /US\$2,400\.0/)
   assert.doesNotMatch(formatted.firstYearCommitted, /待确认/)
   assert.match(formatted.variable, /待确认/)
 })
@@ -285,7 +286,9 @@ test('中途退出优先退出称号，完成路线按七段总分称号', () =>
       }),
     ]),
   ])
-  assert.equal(chooseOption(exitQuiz, restartGame(exitQuiz), 'cheap-exit').result?.title, '及时刹车工程师')
+  const exitResult = chooseOption(exitQuiz, restartGame(exitQuiz), 'cheap-exit').result
+  assert.equal(exitResult?.title, '及时刹车工程师')
+  assert.equal(exitResult?.conclusion, '')
 
   const scoringQuiz = definition([
     question(1, [option('finish', { outcome: 'result' })], {
@@ -360,7 +363,47 @@ test('动态累计金额的四种原文占位写法在 Web 与小程序共享核
     '{{spent}} / x（前面累加金额） / x元（前面计算） / xx元',
     completed.result?.ledger ?? completed.ledger,
   )
-  assert.equal((text.match(/¥800\.00/g) ?? []).length, 4)
+  assert.equal((text.match(/¥800\.0/g) ?? []).length, 4)
+})
+
+test('选项首年固定投入可动态折算为月均投入并插入题面', () => {
+  const paymentOption = option('wechat-pay', {
+    effects: [
+      {
+        type: 'money',
+        bucket: 'firstYearCommitted',
+        amount: 300,
+        currency: 'CNY',
+        label: '微信支付相关认证预算',
+      },
+      {
+        type: 'money',
+        bucket: 'renewal',
+        amount: 300,
+        currency: 'CNY',
+        label: '微信支付相关认证续费预算',
+      },
+      {
+        type: 'money',
+        bucket: 'variable',
+        amount: null,
+        currency: 'CNY',
+        label: '支付手续费',
+      },
+    ],
+  })
+  const monthlyAverage = optionMonthlyAverageInvestmentCny(paymentOption)
+  assert.equal(monthlyAverage, 25)
+  assert.equal(
+    interpolateQuizText(
+      '折合{{optionMonthlyAverageInvestment}}/月',
+      restartGame(definition([question(1, [paymentOption])])).ledger,
+      {},
+      undefined,
+      monthlyAverage ?? undefined,
+    ),
+    '折合¥25.0/月',
+  )
 })
 
 test('题库校验会拒绝重复题号、重复场景和悬空跳转', () => {

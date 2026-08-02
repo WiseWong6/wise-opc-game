@@ -5,10 +5,6 @@ const root = resolve(import.meta.dirname, '..')
 const scanRoots = [
   'web/src',
   'web/index.html',
-  'web/minimal/index.html',
-  'web/paper/index.html',
-  'web/cyber/index.html',
-  'web/pixel/index.html',
   'web/dist',
   'miniprogram',
 ].map((path) => resolve(root, path))

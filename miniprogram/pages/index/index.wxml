@@ -1,9 +1,16 @@
 <view class="page-shell">
   <view class="topbar">
     <text>OPC / SURVIVAL</text>
-    <text wx:if="{{screen === 'intro'}}">准备开始</text>
-    <text wx:elif="{{screen === 'challenge'}}">正在闯关</text>
-    <text wx:else>结果已结算</text>
+    <view class="topbar-actions">
+      <text wx:if="{{screen === 'intro'}}">准备开始</text>
+      <text wx:elif="{{screen === 'challenge'}}">正在闯关</text>
+      <text wx:else>结果已结算</text>
+      <button
+        class="sound-toggle"
+        aria-label="{{audioEnabled ? '关闭配乐和音效' : '开启配乐和音效'}}"
+        bindtap="toggleSound"
+      >{{audioEnabled ? '♪ 声音 开' : '× 声音 关'}}</button>
+    </view>
   </view>
 
   <view wx:if="{{screen === 'intro'}}" class="intro">
@@ -29,8 +36,8 @@
     <view class="progress"><view class="progress-fill" style="width: {{progressPercent}}%;"></view></view>
 
     <view class="ledger ledger-v2">
-      <view class="ledger-cell"><text>已支付</text><text class="ledger-value">{{ledgerPaid}}</text></view>
-      <view class="ledger-cell"><text>首年固定</text><text class="ledger-value">{{ledgerFirstYear}}</text></view>
+      <view class="ledger-cell"><text>首年总投入</text><text class="ledger-value">{{ledgerFirstYearInvestment}}</text></view>
+      <view class="ledger-cell"><text>月均投入</text><text class="ledger-value">{{ledgerMonthlyAverage}}</text></view>
       <view class="ledger-cell"><text>创始人工时</text><text class="ledger-value">{{ledgerTime}}</text></view>
       <view class="ledger-cell"><text>关键路径</text><text class="ledger-value">{{ledgerPath}}</text></view>
     </view>
@@ -70,8 +77,11 @@
     <text class="result-stamp">{{resultStamp}}</text>
     <text class="result-meta">{{resultMeta}}</text>
     <view class="result-title">{{resultTitle}}</view>
-    <text class="result-conclusion">{{resultConclusion}}</text>
+    <text wx:if="{{resultConclusion}}" class="result-conclusion">{{resultConclusion}}</text>
 
+    <view class="financial-summary">
+      <view wx:for="{{financialSummaryRows}}" wx:key="label"><text>{{item.label}}</text><text class="financial-summary-value">{{item.value}}</text></view>
+    </view>
     <view wx:if="{{badges.length}}" class="badges">
       <text wx:for="{{badges}}" wx:key="id">{{item.label}}</text>
     </view>
@@ -80,7 +90,7 @@
     </view>
     <view wx:if="{{projectionRows.length}}" class="business-projection">
       <view wx:for="{{projectionRows}}" wx:key="label"><text>{{item.label}}</text><text class="strong">{{item.value}}</text></view>
-      <text class="projection-note">仅按用户数 × 月费粗算，未扣流失、渠道、税费和变动成本。</text>
+      <text class="projection-note">预计每月毛利（粗算）＝理论月收入 − 首年总投入 ÷ 12；未扣模型用量、支付手续费、税费、获客和流失。</text>
     </view>
     <view class="result-ledger-full">
       <view wx:for="{{ledgerRows}}" wx:key="label"><text>{{item.label}}</text><text class="strong">{{item.value}}</text></view>
@@ -93,6 +103,6 @@
       <button class="button primary" bindtap="back">← 返回上一题重选</button>
       <button class="button ghost" bindtap="restart">重新开始并清零</button>
     </view>
-    <text class="fine-print">注册资本门槛、待报价和变动成本不会混入已花现金。现实要求请以主管部门和专业人士意见为准。</text>
+    <text class="fine-print">首年总投入按已支付与首年承诺汇总；注册资本门槛、待报价和变动成本另列。现实要求请以主管部门和专业人士意见为准。</text>
   </view>
 </view>
