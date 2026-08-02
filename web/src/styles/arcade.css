@@ -62,6 +62,12 @@ body[data-theme="arcade"] .sound-toggle:hover { transform: none; background: rgb
 body[data-theme="arcade"] .sound-toggle:focus-visible { outline: 2px solid #5eead4; outline-offset: 2px; }
 body[data-theme="arcade"] .sound-toggle[aria-pressed="false"] { color: rgba(235, 244, 242, .55); }
 
+/* 小红书宿主已经在右上角提供个人与分享按钮。离线包隐藏重复的
+   游戏声音按钮，避免三枚浮层在窄屏安全区互相遮挡；声音状态仍默认开启。 */
+body[data-theme="arcade"][data-platform="xhs-tool"] .sound-toggle {
+  display: none;
+}
+
 /* ---------- 全屏场景 ---------- */
 
 .arcade-layout {

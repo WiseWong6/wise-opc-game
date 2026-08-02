@@ -94,6 +94,15 @@ function optimizeStaticPixelImages() {
   return candidates.length
 }
 
+function markXhsRuntime() {
+  const htmlPath = path.join(outDir, 'index.html')
+  let html = readFileSync(htmlPath, 'utf8')
+  const bodyMarker = '<body data-theme="arcade">'
+  if (!html.includes(bodyMarker)) fail('无法标记小红书运行时：入口 body 结构已变化')
+  html = html.replace(bodyMarker, '<body data-theme="arcade" data-platform="xhs-tool">')
+  writeFileSync(htmlPath, html)
+}
+
 function inlineAudioAssets() {
   const audioDir = path.join(outDir, 'assets', 'audio')
   if (!existsSync(audioDir)) fail('构建产物缺少 assets/audio，无法完成离线音频内联')
@@ -331,6 +340,7 @@ execFileSync('npx', ['vite', 'build', '--base', './', '--outDir', outDir, '--emp
 for (const file of walk(outDir)) {
   if (path.basename(file) === '.DS_Store') unlinkSync(file)
 }
+markXhsRuntime()
 const prunedScenes = pruneUnusedAssets()
 
 // 3. 仅优化临时包中的静态 WebP，保留动画 WebP 和源文件质量
