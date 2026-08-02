@@ -12,6 +12,7 @@
     "dev:web": "npm run sync:mini && npm --workspace @opc-game/web run dev",
     "build:web": "npm run sync:mini && npm --workspace @opc-game/web run build",
     "build:xhs": "node scripts/build-xhs-tool.mjs",
+    "optimize:images": "node scripts/optimize-runtime-images.mjs && node scripts/build-scene-manifest.mjs",
     "generate:audio": "node scripts/generate-audio-assets.mjs",
     "sync:mini": "node scripts/sync-miniprogram.mjs",
     "check:sync": "node scripts/sync-miniprogram.mjs --check",

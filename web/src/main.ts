@@ -50,6 +50,7 @@ let transition: PixelTransition | null = null
 let transitionTimer: number | null = null
 let showingCostCheckpoint = false
 const preloadedAssets = new Set<string>()
+type ImagePriority = 'high' | 'low'
 
 const escapeHtml = (value: string): string =>
   value.replace(/[&<>'"]/g, (character) => ({
@@ -131,28 +132,44 @@ function renderResult(): string {
   return shell(renderArcadeResult(state, quiz), '结果已结算')
 }
 
-function preloadAsset(asset: string): void {
+function preloadAsset(asset: string, priority: ImagePriority): void {
   if (preloadedAssets.has(asset)) return
   preloadedAssets.add(asset)
   const image = new Image()
   image.decoding = 'async'
+  image.fetchPriority = priority
   image.src = assetUrl(asset)
 }
 
-function preloadQuestionAsset(questionId: string | null, includeOptionFrames = false): void {
+function preloadQuestionScene(questionId: string | null, priority: ImagePriority = 'high'): void {
   if (!questionId) return
   const question = quiz.questions.find((candidate) => candidate.id === questionId)
   if (!question) return
   const mobile = window.matchMedia('(max-width: 600px)').matches
-  preloadAsset(mobile ? question.visual.mobileAsset : question.visual.desktopAsset)
-  if (!includeOptionFrames) return
+  preloadAsset(mobile ? question.visual.mobileAsset : question.visual.desktopAsset, priority)
+}
 
-  for (const variant of Object.values(question.visual.optionVariants ?? {})) {
+function preloadOptionFrames(question: QuizQuestion, optionId?: string, priority: ImagePriority = 'low'): void {
+  const mobile = window.matchMedia('(max-width: 600px)').matches
+  const variants = optionId
+    ? [question.visual.optionVariants?.[optionId]].filter((variant) => variant !== undefined)
+    : Object.values(question.visual.optionVariants ?? {})
+
+  for (const variant of variants) {
     for (const frame of [variant.action, variant.resolved]) {
       if (!frame) continue
-      preloadAsset(mobile ? frame.mobileAsset : frame.desktopAsset)
+      preloadAsset(mobile ? frame.mobileAsset : frame.desktopAsset, priority)
     }
   }
+}
+
+function scheduleOptionFramePreload(question: QuizQuestion): void {
+  const preload = () => preloadOptionFrames(question)
+  if (typeof window.requestIdleCallback === 'function') {
+    window.requestIdleCallback(preload, { timeout: 1_200 })
+    return
+  }
+  globalThis.setTimeout(preload, 350)
 }
 
 function render(): void {
@@ -161,8 +178,12 @@ function render(): void {
   else if (state.phase === 'playing') app.innerHTML = renderQuestion()
   else app.innerHTML = renderResult()
 
-  if (!started) preloadQuestionAsset(quiz.definition.startQuestionId, true)
-  else if (state.phase === 'playing' && !transition) preloadQuestionAsset(state.currentQuestionId, true)
+  if (!started) preloadQuestionScene(quiz.definition.startQuestionId)
+  else if (state.phase === 'playing' && !transition) {
+    const question = currentQuestion()
+    preloadQuestionScene(state.currentQuestionId)
+    if (question) scheduleOptionFramePreload(question)
+  }
   if (!transition) {
     window.requestAnimationFrame(() => {
       const heading = app.querySelector<HTMLHeadingElement>('h1')
@@ -214,7 +235,8 @@ function selectOption(optionId: string): void {
   if (!question || !option) return
   const nextState = chooseOption(quiz, state, option.id)
   gameAudio.playEffect(nextState.phase === 'exited' ? 'exit' : 'confirm')
-  preloadQuestionAsset(nextState.currentQuestionId)
+  preloadOptionFrames(question, option.id, 'high')
+  preloadQuestionScene(nextState.currentQuestionId)
   transition = {
     optionId: option.id,
     optionLabel: interpolateText(
