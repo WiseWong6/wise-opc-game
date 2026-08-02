@@ -711,15 +711,15 @@
               "file": "web/public/assets/pixel/scenes-v2/options/Q08/both-action-desktop.webp",
               "width": 768,
               "height": 512,
-              "bytes": 56316,
-              "sha256": "465d737f5e77896b8315a204b5b24086d1ed12b45a4c9c0c46a55da2694e9c30"
+              "bytes": 63434,
+              "sha256": "a6b8d6d72a291515f0623ec81e55ab0b41da7e5de72eca909eada89d5d5074df"
             },
             "mobile": {
               "file": "web/public/assets/pixel/scenes-v2/options/Q08/both-action-mobile.webp",
               "width": 512,
               "height": 768,
-              "bytes": 56610,
-              "sha256": "6ee60809fa9398fba3a3ad4716465e4f5efeaf5d4c089cdae4d630f2dcd93260"
+              "bytes": 65306,
+              "sha256": "4d1e0db6561b4a52e0f9c5cc81f11d15959a65a0a5e093d07096a842f9d506cc"
             }
           },
           "resolved": {
@@ -727,15 +727,15 @@
               "file": "web/public/assets/pixel/scenes-v2/options/Q08/both-resolved-desktop.webp",
               "width": 768,
               "height": 512,
-              "bytes": 50424,
-              "sha256": "6ca11268c5e59a66128f8583fc9962f37a5ff8524150f289495db6f3f9fd2132"
+              "bytes": 59742,
+              "sha256": "6b6b239aa414b58891dbafcbfc45559d4fb57244054acb2855c895be09ab8459"
             },
             "mobile": {
               "file": "web/public/assets/pixel/scenes-v2/options/Q08/both-resolved-mobile.webp",
               "width": 512,
               "height": 768,
-              "bytes": 42768,
-              "sha256": "cceef15c37f3ee759ff4f0766ce2f7ac837ee94b51d196a83c8473432fb6a410"
+              "bytes": 65870,
+              "sha256": "aff91d46691236220d0bc15b712932449daf55fa30db92b7c4c0a911cb8b1824"
             }
           },
           "overlay": {
@@ -854,15 +854,15 @@
         "file": "web/public/assets/pixel/scenes-v2/Q10-desktop.webp",
         "width": 1536,
         "height": 1024,
-        "bytes": 319912,
-        "sha256": "bd9218023c65a4ca22f2fbb3c18ff01b980293b765e3574715a5bc853d8fda7e"
+        "bytes": 290794,
+        "sha256": "e855569e62bcb26be1184bf273c07dd6d2dd46fbc6abb86e639ac98ed3347e85"
       },
       "mobile": {
         "file": "web/public/assets/pixel/scenes-v2/Q10-mobile.webp",
         "width": 1024,
         "height": 1536,
-        "bytes": 280424,
-        "sha256": "20ec8adb844e3323b6ea372a27b59c2e4cb8b927ae121f8885c097d0665f4236"
+        "bytes": 274036,
+        "sha256": "fce4e7a18b9036b3193801e78c2e36428113105968c6c99ff7c7fc6300bfc7b1"
       },
       "optionVariants": {
         "gpt-ultra": {
@@ -871,15 +871,15 @@
               "file": "web/public/assets/pixel/scenes-v2/options/Q10/gpt-ultra-action-desktop.webp",
               "width": 768,
               "height": 512,
-              "bytes": 67872,
-              "sha256": "2164f091a74aca62c9fb72f8e21297ecd38f0e99ad7d2cb227aba9778a3caa81"
+              "bytes": 75798,
+              "sha256": "6f1f15ad870245233220359ed2aa19df88952f8686dc7ea94228a2829608d4c4"
             },
             "mobile": {
               "file": "web/public/assets/pixel/scenes-v2/options/Q10/gpt-ultra-action-mobile.webp",
               "width": 512,
               "height": 768,
-              "bytes": 66102,
-              "sha256": "9b74f03754931455c361a82665f94cce284eadbdbab3e0fd97371d3f459c3c42"
+              "bytes": 74844,
+              "sha256": "c8612b4d7459d8a21e51560b3da958f73b729d14df22ed6522b089ecf991b6b5"
             }
           },
           "resolved": {
@@ -887,8 +887,8 @@
               "file": "web/public/assets/pixel/scenes-v2/options/Q10/gpt-ultra-resolved-desktop.webp",
               "width": 768,
               "height": 512,
-              "bytes": 395520,
-              "sha256": "9a96765f986e9d8c5e7277f0f0805f75d47e58a5a16e3697df1c846d7165c552"
+              "bytes": 77986,
+              "sha256": "f7eec401fa13e61c878dae77f3013b96d313ffb910b6bc4706181ef072cb5f96"
             },
             "mobile": {
               "file": "web/public/assets/pixel/scenes-v2/options/Q10/gpt-ultra-resolved-mobile.webp",
@@ -911,15 +911,15 @@
               "file": "web/public/assets/pixel/scenes-v2/options/Q10/glm-pro-action-desktop.webp",
               "width": 768,
               "height": 512,
-              "bytes": 68682,
-              "sha256": "820a21f79e19e4ea2a5a76fdaf72c619d8f060c924ff8a01d8adee356896539e"
+              "bytes": 79290,
+              "sha256": "78866cc53d2ace58df1fa88c2040f378148ba8ae4997bcddd5819dda6464f2dd"
             },
             "mobile": {
               "file": "web/public/assets/pixel/scenes-v2/options/Q10/glm-pro-action-mobile.webp",
               "width": 512,
               "height": 768,
-              "bytes": 65332,
-              "sha256": "b0f99dc3493353e5585eea4b6e2c6d5929b9362de330331a961f4706644963b4"
+              "bytes": 81190,
+              "sha256": "55f1adb98c55a05aee62f2674ab7f92e9c99b53fe5b3286e199e760e67d06317"
             }
           },
           "resolved": {
@@ -927,20 +927,20 @@
               "file": "web/public/assets/pixel/scenes-v2/options/Q10/glm-pro-resolved-desktop.webp",
               "width": 768,
               "height": 512,
-              "bytes": 377578,
-              "sha256": "f9b193b69a79c73d8939d6d5ac6859d98947805008f34c900aee2639b5ccb7cc"
+              "bytes": 75476,
+              "sha256": "47f31ab48298d0132c00ffc04a2a8ffcc3344f82205daab1b31ca26ea9b0857c"
             },
             "mobile": {
               "file": "web/public/assets/pixel/scenes-v2/options/Q10/glm-pro-resolved-mobile.webp",
               "width": 512,
               "height": 768,
-              "bytes": 408264,
-              "sha256": "9f92ffc408d2fbd9262e7f61013b086893d8419a2ff45190ba4cbcb81c601143"
+              "bytes": 77354,
+              "sha256": "8d81e43d1ac8f5bd9844683bd892f3db22b96de88d12ad860bac08eab09d16ca"
             }
           },
           "overlay": {
             "eyebrow": "Coding AI",
-            "title": "GLM 5.2 Pro",
+            "title": "GLM 5.2",
             "detail": "连续包年 ¥1,430.4/年",
             "tone": "brand"
           }
@@ -951,15 +951,15 @@
               "file": "web/public/assets/pixel/scenes-v2/options/Q10/kimi-code-action-desktop.webp",
               "width": 768,
               "height": 512,
-              "bytes": 57218,
-              "sha256": "bc342c2f472b894e3ed9a22a4d65e1194fc7951f999bb10e08c31ed67d2b3b03"
+              "bytes": 61342,
+              "sha256": "63a8e10cb2ddbf54acb080d3f0cf505c2a919f1989c369f355c6cf407cf65f39"
             },
             "mobile": {
               "file": "web/public/assets/pixel/scenes-v2/options/Q10/kimi-code-action-mobile.webp",
               "width": 512,
               "height": 768,
-              "bytes": 56046,
-              "sha256": "074cd3a8ef83f9386ffe0b3cef72a777c4128c5306893e5023feb926ea912bed"
+              "bytes": 59766,
+              "sha256": "1ea4f8cf831b8b99ff2f9a18b6435e9f2688a811584f9e91b697fd051a33aa74"
             }
           },
           "resolved": {
@@ -980,8 +980,8 @@
           },
           "overlay": {
             "eyebrow": "Coding AI",
-            "title": "Kimi Code 2.7",
-            "detail": "约 ¥200/月",
+            "title": "Kimi K3",
+            "detail": "约 ¥699/月",
             "tone": "brand"
           }
         },
@@ -1007,8 +1007,8 @@
               "file": "web/public/assets/pixel/scenes-v2/options/Q10/free-tools-resolved-desktop.webp",
               "width": 768,
               "height": 512,
-              "bytes": 407696,
-              "sha256": "7bc05ffcf59137cfde6e25582dd5e40da55995d320c4a7879ca152438bdeeb14"
+              "bytes": 84842,
+              "sha256": "392d237e6516f1bb4ac3869eca6d9ab3a218da74f7ff3ac9cc2a3937bd951d76"
             },
             "mobile": {
               "file": "web/public/assets/pixel/scenes-v2/options/Q10/free-tools-resolved-mobile.webp",

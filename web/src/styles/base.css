@@ -13,8 +13,38 @@
 
 * { box-sizing: border-box; }
 html, body, #app { min-height: 100%; margin: 0; }
-body { min-width: 320px; min-height: 100vh; color: var(--ink); }
+html { touch-action: manipulation; }
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  color: var(--ink);
+  -webkit-touch-callout: none;
+}
 button { font: inherit; }
+
+.sound-toggle {
+  position: fixed;
+  z-index: 35;
+  top: 18px;
+  right: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  background: var(--surface);
+  box-shadow: 3px 3px 0 color-mix(in srgb, var(--ink) 16%, transparent);
+  cursor: pointer;
+  font: 750 10px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  letter-spacing: .04em;
+}
+
+.sound-toggle:hover { transform: translate(-1px, -1px); }
+.sound-toggle:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.sound-toggle[aria-pressed="false"] { color: var(--muted); box-shadow: none; }
+.sound-toggle > span:first-child { width: 12px; font-size: 14px; text-align: center; }
 
 .shell {
   min-height: 100vh;
@@ -191,6 +221,10 @@ button { font: inherit; }
 .result__notice span { color: var(--muted); }
 .result-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .result-badges span { padding: 6px 9px; border: 1px solid var(--line); background: var(--surface-soft); font-size: 11px; font-weight: 750; }
+.financial-summary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; margin: 8px 0 0; border: 1px solid var(--line); background: var(--line); }
+.financial-summary div { display: grid; gap: 7px; padding: 14px; background: var(--surface); }
+.financial-summary dt { color: var(--muted); font-size: 10px; }
+.financial-summary dd { margin: 0; font: 800 clamp(18px, 3vw, 28px)/1.1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 .score-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; margin-top: 18px; border: 1px solid var(--line); background: var(--line); }
 .score-grid div { display: grid; gap: 6px; padding: 12px; background: var(--surface); }
 .score-grid span { color: var(--muted); font-size: 10px; }
@@ -211,10 +245,16 @@ button { font: inherit; }
   .shell { display: block; }
   .identity { display: none; }
   .game-card { min-height: 100vh; border: 0; }
+  .mobile-brand { padding-right: 86px; }
+  .sound-toggle { top: max(12px, var(--safe-area-inset-top, env(safe-area-inset-top, 0px))); right: 18px; }
 }
 
 @media (max-width: 600px) {
-  .game-card { padding: max(18px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom)); }
+  .game-card {
+    padding: max(18px, var(--safe-area-inset-top, env(safe-area-inset-top, 0px)))
+      20px
+      max(24px, var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
+  }
   .intro, .result, .challenge { min-height: calc(100svh - 72px); }
   .intro h1 { margin-top: 20px; font-size: 42px; }
   .intro__lead { font-size: 16px; }
@@ -230,13 +270,13 @@ button { font: inherit; }
   .option-button { min-height: 50px; padding: 9px 11px; }
   .secondary-row span { display: none; }
   .result h1 { font-size: 39px; }
-  .score-grid, .result-ledger, .business-projection { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .score-grid, .result-ledger, .business-projection, .financial-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 340px) {
   .game-card { padding-right: 14px; padding-left: 14px; }
   .option-button { font-size: 13px; }
-  .score-grid, .result-ledger, .business-projection { grid-template-columns: 1fr; }
+  .score-grid, .result-ledger, .business-projection, .financial-summary { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {

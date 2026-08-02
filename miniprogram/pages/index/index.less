@@ -17,6 +17,28 @@
   letter-spacing: 2rpx;
 }
 
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+}
+
+.sound-toggle {
+  min-height: 44rpx;
+  margin: 0;
+  padding: 6rpx 10rpx;
+  border: 2rpx solid #777570;
+  border-radius: 0;
+  color: #171717;
+  background: #f8f7f3;
+  font-family: monospace;
+  font-size: 18rpx;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.sound-toggle::after { border: 0; }
+
 .intro,
 .challenge,
 .result {
@@ -206,6 +228,9 @@
 .result-notice { display: flex; flex-direction: column; gap: 8rpx; margin: 34rpx 0; padding: 28rpx 0; border-top: 2rpx solid #c8c7c2; border-bottom: 2rpx solid #c8c7c2; font-size: 23rpx; line-height: 1.5; }
 .badges { display: flex; flex-wrap: wrap; gap: 12rpx; margin-top: 24rpx; }
 .badges text { padding: 10rpx 14rpx; border: 2rpx solid #c8c7c2; background: #eeede8; font-size: 20rpx; font-weight: 700; }
+.financial-summary { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rpx; margin-top: 16rpx; border: 2rpx solid #c8c7c2; background: #c8c7c2; }
+.financial-summary view { display: flex; flex-direction: column; gap: 10rpx; min-width: 0; padding: 22rpx 18rpx; color: #676560; background: #f8f7f3; font-size: 20rpx; }
+.financial-summary-value { color: #111; font-family: monospace; font-size: 31rpx; font-weight: 800; line-height: 1.15; overflow-wrap: anywhere; }
 .score-grid,
 .result-ledger-full,
 .business-projection { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rpx; margin-top: 24rpx; border: 2rpx solid #c8c7c2; background: #c8c7c2; }

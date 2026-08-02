@@ -3,8 +3,13 @@ import test from 'node:test'
 import quizData from '../content/quiz-v2.json'
 import {
   chooseOption,
+  formatCurrency,
   goBack,
+  interpolateQuizText,
+  optionMonthlyAverageInvestmentCny,
+  optionMonthlyPrice,
   restartGame,
+  summarizeFinancials,
   validateQuizDefinition,
   type QuizDefinition,
   type QuizOption,
@@ -68,6 +73,111 @@ function scoreEffects(option: QuizOption): Array<[string, number]> {
     )
 }
 
+type OptionDuration = {
+  hours: number
+  blockingWaitDays: number
+  nonBlockingWaitDays: number
+}
+
+function optionDuration(questionId: string, optionId: string): OptionDuration {
+  const question = quiz.questions.find((candidate) => candidate.id === questionId)
+  const option = question?.options.find((candidate) => candidate.id === optionId)
+  assert.ok(option, `缺少 ${questionId}/${optionId}`)
+  return option.effects.reduce<OptionDuration>((duration, effect) => {
+    if (effect.type === 'effort' && effect.bucket === 'founderHours') {
+      duration.hours += effect.hours
+    }
+    if (effect.type === 'wait') {
+      if (effect.blocking) duration.blockingWaitDays += effect.days
+      else duration.nonBlockingWaitDays += effect.days
+    }
+    return duration
+  }, { hours: 0, blockingWaitDays: 0, nonBlockingWaitDays: 0 })
+}
+
+test('用户确认的各题工时、等待天数和粗算文案落到共享题库', () => {
+  const expected: Record<string, Record<string, OptionDuration>> = {
+    Q01: { launch: { hours: 3, blockingWaitDays: 0, nonBlockingWaitDays: 0 } },
+    Q02: { login: { hours: 6, blockingWaitDays: 0, nonBlockingWaitDays: 0 } },
+    Q04: { 'found-company': { hours: 6, blockingWaitDays: 0, nonBlockingWaitDays: 0 } },
+    Q05: { register: { hours: 0, blockingWaitDays: 2, nonBlockingWaitDays: 0 } },
+    Q06: {
+      desk: { hours: 6, blockingWaitDays: 0, nonBlockingWaitDays: 0 },
+      hosted: { hours: 12, blockingWaitDays: 0, nonBlockingWaitDays: 0 },
+    },
+    Q07: { 'open-bank-account': { hours: 6, blockingWaitDays: 7, nonBlockingWaitDays: 0 } },
+    Q08: {
+      'wechat-pay': { hours: 36, blockingWaitDays: 0, nonBlockingWaitDays: 0 },
+      alipay: { hours: 24, blockingWaitDays: 0, nonBlockingWaitDays: 0 },
+      both: { hours: 36, blockingWaitDays: 0, nonBlockingWaitDays: 0 },
+    },
+    Q09: {
+      'agency-bookkeeping': { hours: 12, blockingWaitDays: 0, nonBlockingWaitDays: 0 },
+      'self-bookkeeping': { hours: 180, blockingWaitDays: 0, nonBlockingWaitDays: 0 },
+    },
+    Q10: { 'gpt-ultra': { hours: 18, blockingWaitDays: 0, nonBlockingWaitDays: 0 } },
+    Q11: { 'runtime-ai': { hours: 18, blockingWaitDays: 0, nonBlockingWaitDays: 0 } },
+    Q12: { 'buy-domain-stack': { hours: 6, blockingWaitDays: 0, nonBlockingWaitDays: 0 } },
+    Q13: {
+      'sms-login': { hours: 6, blockingWaitDays: 0, nonBlockingWaitDays: 0 },
+      'remove-login-and-commerce': { hours: 12, blockingWaitDays: 0, nonBlockingWaitDays: 0 },
+    },
+    Q14: {
+      'one-core-two-gb': { hours: 12, blockingWaitDays: 0, nonBlockingWaitDays: 0 },
+      'two-core-four-gb': { hours: 12, blockingWaitDays: 0, nonBlockingWaitDays: 0 },
+    },
+    Q15: {
+      'system-and-data-disk': { hours: 6, blockingWaitDays: 0, nonBlockingWaitDays: 0 },
+      'system-disk-only': { hours: 3, blockingWaitDays: 0, nonBlockingWaitDays: 0 },
+    },
+    Q16: { 'three-megabit': { hours: 3, blockingWaitDays: 0, nonBlockingWaitDays: 0 } },
+    Q17: { 'submit-miit-filing': { hours: 0, blockingWaitDays: 7, nonBlockingWaitDays: 0 } },
+    Q18: { 'submit-police-filing': { hours: 0, blockingWaitDays: 7, nonBlockingWaitDays: 0 } },
+    Q19: {
+      'self-operated': { hours: 12, blockingWaitDays: 0, nonBlockingWaitDays: 0 },
+      'self-published': { hours: 12, blockingWaitDays: 0, nonBlockingWaitDays: 0 },
+      'all-in-capital': { hours: 12, blockingWaitDays: 0, nonBlockingWaitDays: 0 },
+    },
+    Q20: {
+      'self-assessment': { hours: 42, blockingWaitDays: 0, nonBlockingWaitDays: 0 },
+      'third-party-assessment': { hours: 42, blockingWaitDays: 0, nonBlockingWaitDays: 0 },
+    },
+    Q21: {
+      'level-two': { hours: 84, blockingWaitDays: 0, nonBlockingWaitDays: 0 },
+      'level-three': { hours: 126, blockingWaitDays: 0, nonBlockingWaitDays: 0 },
+    },
+    Q22: {
+      'clear-enough': { hours: 18, blockingWaitDays: 0, nonBlockingWaitDays: 0 },
+      'big-company-risk': { hours: 18, blockingWaitDays: 0, nonBlockingWaitDays: 0 },
+      'not-thought-through': { hours: 42, blockingWaitDays: 0, nonBlockingWaitDays: 0 },
+    },
+    Q24: {
+      'price-9-9': { hours: 42, blockingWaitDays: 0, nonBlockingWaitDays: 0 },
+      'price-19-9': { hours: 42, blockingWaitDays: 0, nonBlockingWaitDays: 0 },
+      'price-29-9': { hours: 42, blockingWaitDays: 0, nonBlockingWaitDays: 0 },
+    },
+  }
+
+  for (const [questionId, options] of Object.entries(expected)) {
+    for (const [optionId, duration] of Object.entries(options)) {
+      assert.deepEqual(optionDuration(questionId, optionId), duration, `${questionId}/${optionId}`)
+    }
+  }
+
+  assert.equal(optionDuration('Q09', 'agency-bookkeeping').hours, 12)
+  assert.equal(
+    quiz.questions.find((question) => question.id === 'Q09')?.options
+      .find((option) => option.id === 'agency-bookkeeping')?.effects
+      .filter((effect) => effect.type === 'effort' && effect.bucket === 'recurringMonthlyHours')
+      .reduce((sum, effect) => sum + (effect.type === 'effort' ? effect.hours : 0), 0),
+    1,
+  )
+  assert.equal(quiz.questions.find((question) => question.id === 'Q03')?.options
+    .find((option) => option.id === 'profit')?.effects.some((effect) => effect.type === 'money'), false)
+  assert.equal(quiz.questions.find((question) => question.id === 'Q24')?.options
+    .every((option) => !option.label.includes('（粗算）')), true)
+})
+
 test('v2 定义恰好 25 题、25 场景，所有非退出边只前进且无悬空目标', () => {
   assert.deepEqual(validateQuizDefinition(quiz), [])
   assert.equal(quiz.questions.length, 25)
@@ -128,19 +238,22 @@ test('Q19、Q20、Q21 对所有非退出选择都严格顺承', () => {
   }
 })
 
-test('100 万门槛、1.2 万安全报价和等保预算从不混入已支付现金', () => {
+test('100 万门槛独立记账并纳入首年总投入，第三方评估与等保仍计入首年固定成本', () => {
   const before = reach('Q19')
   const paidBefore = before.ledger.costs.paidSunk.totalCny
+  const committedBefore = before.ledger.costs.firstYearCommitted.totalCny
   const capital = answer(before, 'all-in-capital')
   assert.equal(capital.ledger.costs.capitalRequirement.totalCny, 1_000_000)
   assert.equal(capital.ledger.costs.paidSunk.totalCny, paidBefore)
+  assert.equal(capital.ledger.costs.firstYearCommitted.totalCny, committedBefore)
+  assert.equal(summarizeFinancials(capital.ledger).firstYearInvestmentCny, 1_000_000 + paidBefore + committedBefore)
 
   const quoted = answer(capital, 'third-party-assessment')
-  assert.equal(quoted.ledger.costs.pendingQuote.totalCny, 12_000)
+  assert.equal(quoted.ledger.costs.firstYearCommitted.totalCny, committedBefore + 12_000)
   assert.equal(quoted.ledger.costs.paidSunk.totalCny, paidBefore)
 
   const mlps = answer(quoted, 'level-three')
-  assert.equal(mlps.ledger.costs.pendingQuote.totalCny, 112_000)
+  assert.equal(mlps.ledger.costs.firstYearCommitted.totalCny, committedBefore + 112_000)
   assert.equal(mlps.ledger.costs.paidSunk.totalCny, paidBefore)
 })
 
@@ -198,6 +311,74 @@ test('更贵、更大不额外加分：模型、地址、服务器、用户规�
   }
 })
 
+test('Q24 使用上一关用户数和首年总投入，并逐项展示预计每月毛利', () => {
+  let state = reach('Q23')
+  state = answer(state, 'users-1000')
+  assert.equal(state.currentQuestionId, 'Q24')
+  const question = quiz.questions.find((candidate) => candidate.id === 'Q24')
+  assert.ok(question)
+
+  const prompt = interpolateQuizText(question.prompt, state.ledger, state.metrics)
+  assert.match(prompt, /上一关选择的 1,000 个用户/)
+  assert.match(prompt, /首年总投入是 ¥[\d,.]+/)
+
+  const monthlyInvestment = (
+    state.ledger.costs.paidSunk.totalCny
+    + state.ledger.costs.firstYearCommitted.totalCny
+  ) / 12
+  for (const option of question.options.filter((candidate) => candidate.outcome !== 'exit')) {
+    const monthlyPrice = optionMonthlyPrice(option)
+    assert.notEqual(monthlyPrice, null)
+    const label = interpolateQuizText(option.label, state.ledger, state.metrics, monthlyPrice ?? undefined)
+    assert.match(label, /预计每月毛利/)
+    assert.ok(label.includes(formatCurrency((1_000 * (monthlyPrice ?? 0)) - monthlyInvestment)))
+  }
+})
+
+test('Q08 的 300 元年费按 12 个月进入月均投入，并在选项中动态说明', () => {
+  const state = reach('Q08')
+  const question = quiz.questions.find((candidate) => candidate.id === 'Q08')
+  assert.ok(question)
+  const before = summarizeFinancials(state.ledger, state.metrics)
+
+  for (const optionId of ['wechat-pay', 'both']) {
+    const selectedOption: QuizOption | undefined = question.options.find(
+      (candidate) => candidate.id === optionId,
+    )
+    assert.ok(selectedOption)
+    const optionMonthlyAverage = optionMonthlyAverageInvestmentCny(selectedOption)
+    assert.equal(optionMonthlyAverage, 25)
+    assert.match(
+      interpolateQuizText(
+        selectedOption.label,
+        state.ledger,
+        state.metrics,
+        undefined,
+        optionMonthlyAverage ?? undefined,
+      ),
+      /折合¥25\.0\/月/,
+    )
+
+    const after = answer(state, selectedOption.id)
+    const afterFinancials = summarizeFinancials(after.ledger, after.metrics)
+    assert.equal(afterFinancials.firstYearInvestmentCny - before.firstYearInvestmentCny, 300)
+    assert.equal(afterFinancials.monthlyAverageInvestmentCny - before.monthlyAverageInvestmentCny, 25)
+  }
+
+  const alipay = question.options.find((candidate) => candidate.id === 'alipay')
+  assert.ok(alipay)
+  const afterAlipay = summarizeFinancials(answer(state, alipay.id).ledger, state.metrics)
+  assert.equal(afterAlipay.firstYearInvestmentCny, before.firstYearInvestmentCny)
+  assert.equal(afterAlipay.monthlyAverageInvestmentCny, before.monthlyAverageInvestmentCny)
+})
+
+test('运行时题库不再保留旧式动态金额占位符', () => {
+  const serialized = JSON.stringify(quiz)
+  for (const legacyToken of ['x（前面累加金额）', 'x元（前面计算）', 'xx元']) {
+    assert.doesNotMatch(serialized, new RegExp(legacyToken))
+  }
+})
+
 test('完整可行路线到达 Q25 结果页并得到 100 分上限内结果', () => {
   let state = restartGame(quiz)
   while (state.phase === 'playing') {
@@ -209,4 +390,6 @@ test('完整可行路线到达 Q25 结果页并得到 100 分上限内结果', (
   assert.equal(state.result?.answeredCount, 25)
   assert.equal(state.result?.score.total, 100)
   assert.ok((state.result?.badges.length ?? 0) <= 3)
+  assert.equal(state.result?.badges.some((badge) => badge.id === 'one-person-company'), false)
+  assert.equal(state.result?.conclusion, '')
 })

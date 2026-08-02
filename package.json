@@ -11,6 +11,8 @@
   "scripts": {
     "dev:web": "npm run sync:mini && npm --workspace @opc-game/web run dev",
     "build:web": "npm run sync:mini && npm --workspace @opc-game/web run build",
+    "build:xhs": "node scripts/build-xhs-tool.mjs",
+    "generate:audio": "node scripts/generate-audio-assets.mjs",
     "sync:mini": "node scripts/sync-miniprogram.mjs",
     "check:sync": "node scripts/sync-miniprogram.mjs --check",
     "typecheck": "npm run sync:mini && tsc -p tsconfig.check.json --noEmit && tsc -p tsconfig.json --noEmit",

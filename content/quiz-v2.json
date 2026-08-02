@@ -62,7 +62,7 @@
           "effects": [
             { "type": "set-fact", "key": "wantsLaunch", "value": true },
             { "type": "metric", "key": "score.execution", "value": 1 },
-            { "type": "effort", "bucket": "founderHours", "hours": 0.5, "track": "development", "label": "确认上线目标" }
+            { "type": "effort", "bucket": "founderHours", "hours": 3, "track": "development", "label": "思考上线目标（0.5天）" }
           ]
         },
         {
@@ -121,6 +121,8 @@
           "effects": [
             { "type": "set-fact", "key": "requiresLogin", "value": true },
             { "type": "set-fact", "key": "hasInteractiveFeatures", "value": true },
+            { "type": "effort", "bucket": "founderHours", "hours": 3, "track": "development", "label": "登录接入调研（0.5天）" },
+            { "type": "effort", "bucket": "founderHours", "hours": 3, "track": "development", "label": "登录 API 接通（0.5天）" },
             { "type": "metric", "key": "score.business", "value": 2 }
           ]
         },
@@ -175,7 +177,7 @@
       "options": [
         {
           "id": "profit",
-          "label": "一个月200刀，我不赚钱谁赚钱？",
+          "label": "GPT Pro 1个月200刀，我不赚钱谁赚钱？",
           "effects": [
             { "type": "set-fact", "key": "commercial", "value": true },
             { "type": "metric", "key": "score.business", "value": 3 }
@@ -227,7 +229,7 @@
             { "type": "set-fact", "key": "hasCompany", "value": true },
             { "type": "metric", "key": "score.execution", "value": 2 },
             { "type": "metric", "key": "score.compliance", "value": 2 },
-            { "type": "effort", "bucket": "founderHours", "hours": 2, "track": "company", "label": "确认一人公司方案" }
+            { "type": "effort", "bucket": "founderHours", "hours": 6, "track": "company", "label": "一人公司信息调研（1天）" }
           ]
         },
         {
@@ -273,8 +275,7 @@
           "visualOutcome": "gpt-sacrifice",
           "effects": [
             { "type": "money", "id": "q05-registration-agent", "bucket": "paidSunk", "amount": 500, "currency": "CNY", "label": "公司注册代办", "sourceType": "用户口径", "chargeTiming": "现在支付", "refundable": false, "priceDate": "2026-07-16" },
-            { "type": "wait", "track": "company", "days": 2, "blocking": true, "label": "公司注册办理" },
-            { "type": "effort", "bucket": "founderHours", "hours": 4, "track": "company", "label": "注册材料准备" },
+            { "type": "wait", "track": "company", "days": 2, "blocking": true, "label": "公司注册办理（总计2天）" },
             { "type": "metric", "key": "score.execution", "value": 3 }
           ]
         },
@@ -331,6 +332,7 @@
           "label": "我要All in，租个工位（1500元/月，一年大概1.8万）",
           "effects": [
             { "type": "set-fact", "key": "registeredAddress", "value": "desk" },
+            { "type": "effort", "bucket": "founderHours", "hours": 6, "track": "company", "label": "租赁工位与签约（1天）" },
             { "type": "money", "id": "q06-desk-first-year", "bucket": "firstYearCommitted", "amount": 18000, "currency": "CNY", "label": "工位租赁首年", "sourceType": "用户口径", "chargeTiming": "上线前支付", "refundable": false, "priceDate": "2026-07-16" },
             { "type": "money", "id": "q06-desk-renewal", "bucket": "renewal", "amount": 18000, "currency": "CNY", "label": "工位租赁次年续费", "sourceType": "用户口径", "chargeTiming": "次年续费", "refundable": true, "priceDate": "2026-07-16" },
             { "type": "metric", "key": "score.execution", "value": 2 }
@@ -341,6 +343,7 @@
           "label": "我还在打工呢，挂靠吧（2000一年）",
           "effects": [
             { "type": "set-fact", "key": "registeredAddress", "value": "hosted" },
+            { "type": "effort", "bucket": "founderHours", "hours": 12, "track": "company", "label": "挂靠地址与材料（2天）" },
             { "type": "money", "id": "q06-hosted-first-year", "bucket": "firstYearCommitted", "amount": 2000, "currency": "CNY", "label": "注册地址挂靠首年", "sourceType": "用户口径", "chargeTiming": "上线前支付", "refundable": false, "priceDate": "2026-07-16" },
             { "type": "money", "id": "q06-hosted-renewal", "bucket": "renewal", "amount": 2000, "currency": "CNY", "label": "注册地址挂靠次年续费", "sourceType": "用户口径", "chargeTiming": "次年续费", "refundable": true, "priceDate": "2026-07-16" },
             { "type": "metric", "key": "score.execution", "value": 2 }
@@ -389,6 +392,9 @@
           "visualOutcome": "gpt-sacrifice",
           "effects": [
             { "type": "set-fact", "key": "hasCorporateBankAccount", "value": true },
+            { "type": "effort", "bucket": "founderHours", "hours": 3, "track": "company", "label": "选择银行（0.5天）" },
+            { "type": "effort", "bucket": "founderHours", "hours": 3, "track": "company", "label": "办理开户（0.5天）" },
+            { "type": "wait", "track": "company", "days": 7, "blocking": true, "label": "拿到开户许可证（7天）" },
             { "type": "money", "id": "q07-bank-first-year", "bucket": "firstYearCommitted", "amount": 500, "currency": "CNY", "label": "公司银行账户首年", "sourceType": "用户口径", "chargeTiming": "上线前支付", "refundable": false, "priceDate": "2026-07-16" },
             { "type": "money", "id": "q07-bank-renewal", "bucket": "renewal", "amount": 500, "currency": "CNY", "label": "公司银行账户次年续费", "sourceType": "用户口径", "chargeTiming": "次年续费", "refundable": true, "priceDate": "2026-07-16" },
             { "type": "metric", "key": "score.execution", "value": 2 },
@@ -397,7 +403,7 @@
         },
         {
           "id": "stop-before-bank",
-          "label": "还没赚钱就已经花了x（前面累加金额）了吗？？？算了",
+          "label": "还没赚钱，首年总投入已经到 {{spent}} 了吗？？？算了",
           "outcome": "exit",
           "exitTitle": "沉没成本观察员",
           "effects": []
@@ -410,7 +416,7 @@
       "chapterId": "company",
       "prompt": "总裁，公户办好了，请问需要申请什么支付呢",
       "defaultNextQuestionId": "Q09",
-      "factNotes": ["¥300 为本局微信相关认证预算口径；支付手续费与适用条件需按支付机构当前规则核实。"],
+      "factNotes": ["¥300 为本局微信相关认证预算口径；选择后计入首年总投入，并按 12 个月折算为月均投入；支付手续费与适用条件需按支付机构当前规则核实。"],
       "visual": {
         "sceneId": "Q08",
         "desktopAsset": "/assets/pixel/scenes-v2/Q08-desktop.webp",
@@ -456,9 +462,10 @@
       "options": [
         {
           "id": "wechat-pay",
-          "label": "微信支付，认证费300/年",
+          "label": "微信支付，认证费300/年（折合{{optionMonthlyAverageInvestment}}/月）",
           "effects": [
             { "type": "set-fact", "key": "paymentChannels", "value": "wechat" },
+            { "type": "effort", "bucket": "founderHours", "hours": 36, "track": "development", "label": "微信支付申请与接口调通（6天）" },
             { "type": "money", "id": "q08-wechat-cert", "bucket": "firstYearCommitted", "amount": 300, "currency": "CNY", "label": "微信支付相关认证预算", "sourceType": "用户口径", "chargeTiming": "上线前支付", "refundable": true, "priceDate": "2026-07-16" },
             { "type": "money", "id": "q08-wechat-cert-renewal", "bucket": "renewal", "amount": 300, "currency": "CNY", "label": "微信支付相关认证续费预算", "sourceType": "用户口径", "chargeTiming": "次年续费", "refundable": true, "priceDate": "2026-07-16" },
             { "type": "money", "id": "q08-payment-fee", "bucket": "variable", "amount": null, "currency": "CNY", "label": "微信支付交易手续费", "sourceType": "待核实", "chargeTiming": "按量发生", "refundable": false },
@@ -471,6 +478,7 @@
           "label": "支付宝支付，没有认证费",
           "effects": [
             { "type": "set-fact", "key": "paymentChannels", "value": "alipay" },
+            { "type": "effort", "bucket": "founderHours", "hours": 24, "track": "development", "label": "支付宝申请与接口调通（4天）" },
             { "type": "money", "id": "q08-payment-fee", "bucket": "variable", "amount": null, "currency": "CNY", "label": "支付宝交易手续费", "sourceType": "待核实", "chargeTiming": "按量发生", "refundable": false },
             { "type": "metric", "key": "score.execution", "value": 2 },
             { "type": "metric", "key": "score.compliance", "value": 2 }
@@ -478,9 +486,10 @@
         },
         {
           "id": "both",
-          "label": "小孩子才做选择，我全都要",
+          "label": "小孩子才做选择，我全都要（微信认证折合{{optionMonthlyAverageInvestment}}/月）",
           "effects": [
             { "type": "set-fact", "key": "paymentChannels", "value": "both" },
+            { "type": "effort", "bucket": "founderHours", "hours": 36, "track": "development", "label": "微信与支付宝申请、接口调通（按较长路线6天）" },
             { "type": "money", "id": "q08-wechat-cert", "bucket": "firstYearCommitted", "amount": 300, "currency": "CNY", "label": "微信支付相关认证预算", "sourceType": "用户口径", "chargeTiming": "上线前支付", "refundable": true, "priceDate": "2026-07-16" },
             { "type": "money", "id": "q08-wechat-cert-renewal", "bucket": "renewal", "amount": 300, "currency": "CNY", "label": "微信支付相关认证续费预算", "sourceType": "用户口径", "chargeTiming": "次年续费", "refundable": true, "priceDate": "2026-07-16" },
             { "type": "money", "id": "q08-payment-fee", "bucket": "variable", "amount": null, "currency": "CNY", "label": "微信与支付宝交易手续费", "sourceType": "待核实", "chargeTiming": "按量发生", "refundable": false },
@@ -541,6 +550,7 @@
           "label": "找代理记账，按 ¥2,000/年。",
           "effects": [
             { "type": "set-fact", "key": "bookkeeping", "value": "agency" },
+            { "type": "effort", "bucket": "founderHours", "hours": 12, "track": "company", "label": "选择代理记账（2天）" },
             { "type": "money", "id": "q09-bookkeeping-first-year", "bucket": "firstYearCommitted", "amount": 2000, "currency": "CNY", "label": "代理记账首年", "sourceType": "用户口径", "chargeTiming": "上线前支付", "refundable": true, "priceDate": "2026-07-16" },
             { "type": "money", "id": "q09-bookkeeping-renewal", "bucket": "renewal", "amount": 2000, "currency": "CNY", "label": "代理记账次年续费", "sourceType": "用户口径", "chargeTiming": "次年续费", "refundable": true, "priceDate": "2026-07-16" },
             { "type": "effort", "bucket": "recurringMonthlyHours", "hours": 1, "track": "company", "label": "每月与代理记账对接" },
@@ -553,6 +563,7 @@
           "label": "我自己做。",
           "effects": [
             { "type": "set-fact", "key": "bookkeeping", "value": "self" },
+            { "type": "effort", "bucket": "founderHours", "hours": 180, "track": "company", "label": "自己学习并启动记账（30天）" },
             { "type": "effort", "bucket": "recurringMonthlyHours", "hours": 4, "track": "company", "label": "自己记账、申报和维护公私财产分离" },
             { "type": "todo", "id": "verify-self-bookkeeping", "label": "核对自行记账申报的能力与当地要求", "timing": "recurring" },
             { "type": "metric", "key": "score.execution", "value": 2 },
@@ -574,7 +585,7 @@
       "chapterId": "build",
       "prompt": "心心念念第一个产品，肯定要拉满啊，你选什么模型？",
       "defaultNextQuestionId": "Q11",
-      "factNotes": ["GPT 的 200 美元/月按国家外汇管理局 2026-07-16 人民币汇率中间价 1 美元 = ¥6.7909 折算：约 ¥1,358.18/月、¥16,298.16/年；实际支付以账单汇率为准。", "GLM 使用截图中的个人 Pro 连续包年口径：¥119.2/月，次年度续费 ¥1,430.4；套餐价格应在购买时再次核对。", "开发工具订阅和产品运行时模型 API 成本分开记账。"],
+      "factNotes": ["GPT 的 200 美元/月按国家外汇管理局 2026-07-16 人民币汇率中间价 1 美元 = ¥6.7909 折算：约 ¥1,358.2/月、¥16,298.2/年；实际支付以账单汇率为准。", "GLM Coding Pro 按月付 ¥149/月计，首年约 ¥1,788（149 × 12）；官方另有连续包季 9 折、连续包年 8 折（约 ¥1,430.4/年）优惠，套餐价格应在购买时再次核对。", "开发工具订阅和产品运行时模型 API 成本分开记账。"],
       "visual": {
         "sceneId": "Q10",
         "desktopAsset": "/assets/pixel/scenes-v2/Q10-desktop.webp",
@@ -601,7 +612,7 @@
               "desktopAsset": "/assets/pixel/scenes-v2/options/Q10/glm-pro-resolved-desktop.webp",
               "mobileAsset": "/assets/pixel/scenes-v2/options/Q10/glm-pro-resolved-mobile.webp"
             },
-            "overlay": { "eyebrow": "Coding AI", "title": "GLM 5.2 Pro", "detail": "连续包年 ¥1,430.4/年", "tone": "brand" }
+            "overlay": { "eyebrow": "Coding AI", "title": "GLM 5.2", "detail": "¥149/月", "tone": "brand" }
           },
           "kimi-code": {
             "action": {
@@ -612,7 +623,7 @@
               "desktopAsset": "/assets/pixel/scenes-v2/options/Q10/kimi-code-resolved-desktop.webp",
               "mobileAsset": "/assets/pixel/scenes-v2/options/Q10/kimi-code-resolved-mobile.webp"
             },
-            "overlay": { "eyebrow": "Coding AI", "title": "Kimi Code 2.7", "detail": "约 ¥200/月", "tone": "brand" }
+            "overlay": { "eyebrow": "Coding AI", "title": "Kimi K3", "detail": "约 ¥699/月", "tone": "brand" }
           },
           "free-tools": {
             "action": {
@@ -637,31 +648,29 @@
             { "type": "set-fact", "key": "codingModel", "value": "gpt-ultra" },
             { "type": "money", "id": "q10-gpt-first-year", "bucket": "firstYearCommitted", "amount": 16298.16, "currency": "CNY", "label": "GPT 高档开发工具年化（按 1 美元 = ¥6.7909 折算）", "sourceType": "用户口径 + 官方中间价折算", "chargeTiming": "按月支付", "refundable": true, "priceDate": "2026-07-16" },
             { "type": "money", "id": "q10-gpt-renewal", "bucket": "renewal", "amount": 16298.16, "currency": "CNY", "label": "GPT 高档开发工具次年年化（按 1 美元 = ¥6.7909 折算）", "sourceType": "用户口径 + 官方中间价折算", "chargeTiming": "按月续费", "refundable": true, "priceDate": "2026-07-16" },
-            { "type": "effort", "bucket": "founderHours", "hours": 80, "track": "development", "label": "MVP 开发" },
+            { "type": "effort", "bucket": "founderHours", "hours": 18, "track": "development", "label": "GPT 路线 MVP 开发（3天）" },
             { "type": "metric", "key": "score.execution", "value": 2 }
           ]
         },
         {
           "id": "glm-pro",
-          "label": "GLM 5.2 Pro，连续包年 ¥1,430.4/年",
+          "label": "GLM 5.2，¥149/月",
           "visualOutcome": "ai-glm",
           "effects": [
             { "type": "set-fact", "key": "codingModel", "value": "glm-pro" },
-            { "type": "money", "id": "q10-glm-first-year", "bucket": "firstYearCommitted", "amount": 1430.4, "currency": "CNY", "label": "GLM Pro 连续包年", "sourceType": "套餐截图", "chargeTiming": "现在支付", "refundable": true, "priceDate": "2026-07-16" },
-            { "type": "money", "id": "q10-glm-renewal", "bucket": "renewal", "amount": 1430.4, "currency": "CNY", "label": "GLM Pro 次年度续费", "sourceType": "套餐截图", "chargeTiming": "次年续费", "refundable": true, "priceDate": "2026-07-16" },
-            { "type": "effort", "bucket": "founderHours", "hours": 80, "track": "development", "label": "MVP 开发" },
+            { "type": "money", "id": "q10-glm-first-year", "bucket": "firstYearCommitted", "amount": 1788, "currency": "CNY", "label": "GLM Coding Pro 首年（¥149/月 × 12）", "sourceType": "官方价格页", "chargeTiming": "按月支付", "refundable": true, "priceDate": "2026-07-29" },
+            { "type": "money", "id": "q10-glm-renewal", "bucket": "renewal", "amount": 1788, "currency": "CNY", "label": "GLM Coding Pro 次年（¥149/月 × 12）", "sourceType": "官方价格页", "chargeTiming": "按月续费", "refundable": true, "priceDate": "2026-07-29" },
             { "type": "metric", "key": "score.execution", "value": 2 }
           ]
         },
         {
           "id": "kimi-code",
-          "label": "Kimi Code 2.7,大概是200元/月",
+          "label": "Kimi K3,大概是699元/月",
           "visualOutcome": "ai-kimi",
           "effects": [
             { "type": "set-fact", "key": "codingModel", "value": "kimi-code" },
-            { "type": "money", "id": "q10-kimi-first-year", "bucket": "firstYearCommitted", "amount": 2400, "currency": "CNY", "label": "Kimi Code 年化预算", "sourceType": "用户估算", "chargeTiming": "按月支付", "refundable": true, "priceDate": "2026-07-16" },
-            { "type": "money", "id": "q10-kimi-renewal", "bucket": "renewal", "amount": 2400, "currency": "CNY", "label": "Kimi Code 次年年化预算", "sourceType": "用户估算", "chargeTiming": "按月续费", "refundable": true, "priceDate": "2026-07-16" },
-            { "type": "effort", "bucket": "founderHours", "hours": 80, "track": "development", "label": "MVP 开发" },
+            { "type": "money", "id": "q10-kimi-first-year", "bucket": "firstYearCommitted", "amount": 8388, "currency": "CNY", "label": "Kimi K3 年化预算（¥699/月）", "sourceType": "用户估算", "chargeTiming": "按月支付", "refundable": true, "priceDate": "2026-07-28" },
+            { "type": "money", "id": "q10-kimi-renewal", "bucket": "renewal", "amount": 8388, "currency": "CNY", "label": "Kimi K3 次年年化预算（¥699/月）", "sourceType": "用户估算", "chargeTiming": "按月续费", "refundable": true, "priceDate": "2026-07-28" },
             { "type": "metric", "key": "score.execution", "value": 2 }
           ]
         },
@@ -671,7 +680,6 @@
           "visualOutcome": "ai-free",
           "effects": [
             { "type": "set-fact", "key": "codingModel", "value": "free-tools" },
-            { "type": "effort", "bucket": "founderHours", "hours": 80, "track": "development", "label": "MVP 开发" },
             { "type": "todo", "id": "choose-free-coding-tool", "label": "选择可用的免费开发工具", "timing": "before-launch" },
             { "type": "metric", "key": "score.execution", "value": 2 }
           ]
@@ -733,6 +741,7 @@
           "visualOutcome": "token-flow",
           "effects": [
             { "type": "set-fact", "key": "runtimeAi", "value": true },
+            { "type": "effort", "bucket": "founderHours", "hours": 18, "track": "development", "label": "运行时 AI 接入、认证与材料（3天）" },
             { "type": "money", "id": "q11-model-api", "bucket": "variable", "amount": null, "currency": "CNY", "label": "模型 API Token 按量成本", "sourceType": "待询价", "chargeTiming": "按量发生", "refundable": false },
             { "type": "money", "id": "q11-content-moderation", "bucket": "variable", "amount": null, "currency": "CNY", "label": "内容审核按量成本", "sourceType": "待询价", "chargeTiming": "按量发生", "refundable": false },
             { "type": "todo", "id": "ai-provider-enterprise-verification", "label": "核实模型供应商企业认证要求", "timing": "before-launch" },
@@ -782,7 +791,9 @@
           "id": "buy-domain-stack",
           "label": "300 块小意思",
           "effects": [
+            { "type": "effort", "bucket": "founderHours", "hours": 6, "track": "development", "label": "域名、SSL 与 DNS 配置（1天）" },
             { "type": "money", "id": "q12-domain-first-year", "bucket": "firstYearCommitted", "amount": 300, "currency": "CNY", "label": "域名、SSL 和 DNS 首次预算", "sourceType": "用户口径", "chargeTiming": "上线前支付", "refundable": true, "priceDate": "2026-07-16" },
+            { "type": "money", "id": "q12-domain-renewal", "bucket": "renewal", "amount": 300, "currency": "CNY", "label": "域名、SSL 和 DNS 次年续费预算", "sourceType": "用户口径", "chargeTiming": "次年续费", "refundable": true, "priceDate": "2026-07-16" },
             { "type": "metric", "key": "score.execution", "value": 1 }
           ]
         },
@@ -840,6 +851,7 @@
           "label": "45块1000条，好划算买买买",
           "effects": [
             { "type": "set-fact", "key": "loginMethod", "value": "sms" },
+            { "type": "effort", "bucket": "founderHours", "hours": 6, "track": "development", "label": "短信登录申请、接入与测试（1天）" },
             { "type": "money", "id": "q13-sms-pack", "bucket": "firstYearCommitted", "amount": 45, "currency": "CNY", "label": "短信 1000 条首包", "sourceType": "用户口径", "chargeTiming": "上线前支付", "refundable": true, "priceDate": "2026-07-16" },
             { "type": "money", "id": "q13-sms-variable", "bucket": "variable", "amount": null, "currency": "CNY", "label": "后续短信按量成本", "sourceType": "待询价", "chargeTiming": "按量发生", "refundable": false },
             { "type": "metric", "key": "score.execution", "value": 1 },
@@ -853,6 +865,7 @@
             { "type": "set-fact", "key": "requiresLogin", "value": false },
             { "type": "set-fact", "key": "commercial", "value": false },
             { "type": "set-fact", "key": "hasInteractiveFeatures", "value": false },
+            { "type": "effort", "bucket": "founderHours", "hours": 12, "track": "development", "label": "移除登录与商业化功能（2天）" },
             { "type": "set-fact", "key": "loginMethod", "value": "none" },
             { "type": "set-fact", "key": "paymentChannels", "value": "none" },
             { "type": "remove-money", "bucket": "firstYearCommitted", "itemId": "q08-wechat-cert" },
@@ -915,6 +928,7 @@
           "label": "1核2g，openclaw都跑不动，你确定要买？",
           "effects": [
             { "type": "set-fact", "key": "serverSpec", "value": "1c2g" },
+            { "type": "effort", "bucket": "founderHours", "hours": 12, "track": "development", "label": "低配服务器购买、配置与部署（2天）" },
             { "type": "money", "id": "q14-1c2g", "bucket": "firstYearCommitted", "amount": null, "currency": "CNY", "label": "1核2G服务器首年费用", "sourceType": "待询价", "chargeTiming": "上线前支付", "refundable": true },
             { "type": "metric", "key": "score.execution", "value": 2 }
           ]
@@ -924,6 +938,7 @@
           "label": "2核4g，1300元/年",
           "effects": [
             { "type": "set-fact", "key": "serverSpec", "value": "2c4g" },
+            { "type": "effort", "bucket": "founderHours", "hours": 12, "track": "development", "label": "基础服务器购买、配置与部署（2天）" },
             { "type": "money", "id": "q14-2c4g-first-year", "bucket": "firstYearCommitted", "amount": 1300, "currency": "CNY", "label": "2核4G服务器首年", "sourceType": "用户口径", "chargeTiming": "上线前支付", "refundable": true, "priceDate": "2026-07-16" },
             { "type": "money", "id": "q14-2c4g-renewal", "bucket": "renewal", "amount": 1300, "currency": "CNY", "label": "2核4G服务器次年续费", "sourceType": "用户口径", "chargeTiming": "次年续费", "refundable": true, "priceDate": "2026-07-16" },
             { "type": "metric", "key": "score.execution", "value": 2 }
@@ -982,6 +997,7 @@
           "label": "系统盘40g+数据盘100g-600元/年",
           "effects": [
             { "type": "set-fact", "key": "dataDisk", "value": true },
+            { "type": "effort", "bucket": "founderHours", "hours": 6, "track": "development", "label": "系统盘与数据盘配置、备份（1天）" },
             { "type": "money", "id": "q15-disk-first-year", "bucket": "firstYearCommitted", "amount": 600, "currency": "CNY", "label": "40G系统盘与100G数据盘首年", "sourceType": "用户口径", "chargeTiming": "上线前支付", "refundable": true, "priceDate": "2026-07-16" },
             { "type": "money", "id": "q15-disk-renewal", "bucket": "renewal", "amount": 600, "currency": "CNY", "label": "40G系统盘与100G数据盘次年续费", "sourceType": "用户口径", "chargeTiming": "次年续费", "refundable": true, "priceDate": "2026-07-16" },
             { "type": "metric", "key": "score.execution", "value": 1 },
@@ -993,6 +1009,7 @@
           "label": "不买，不存-200元 40g系统盘",
           "effects": [
             { "type": "set-fact", "key": "dataDisk", "value": false },
+            { "type": "effort", "bucket": "founderHours", "hours": 3, "track": "development", "label": "系统盘与备份方案配置（0.5天）" },
             { "type": "money", "id": "q15-system-disk-first-year", "bucket": "firstYearCommitted", "amount": 200, "currency": "CNY", "label": "40G系统盘首年", "sourceType": "用户口径", "chargeTiming": "上线前支付", "refundable": true, "priceDate": "2026-07-16" },
             { "type": "money", "id": "q15-system-disk-renewal", "bucket": "renewal", "amount": 200, "currency": "CNY", "label": "40G系统盘次年续费", "sourceType": "用户口径", "chargeTiming": "次年续费", "refundable": true, "priceDate": "2026-07-16" },
             { "type": "todo", "id": "verify-backup-strategy", "label": "确认不使用独立数据盘时的备份与恢复方案", "timing": "before-launch" },
@@ -1034,6 +1051,7 @@
           "id": "three-megabit",
           "label": "3兆/年，724.2元/年",
           "effects": [
+            { "type": "effort", "bucket": "founderHours", "hours": 3, "track": "development", "label": "3M带宽购买与接通（0.5天）" },
             { "type": "money", "id": "q16-bandwidth-first-year", "bucket": "firstYearCommitted", "amount": 724.2, "currency": "CNY", "label": "3M带宽首年", "sourceType": "用户口径", "chargeTiming": "上线前支付", "refundable": true, "priceDate": "2026-07-16" },
             { "type": "money", "id": "q16-bandwidth-renewal", "bucket": "renewal", "amount": 724.2, "currency": "CNY", "label": "3M带宽次年续费", "sourceType": "用户口径", "chargeTiming": "次年续费", "refundable": true, "priceDate": "2026-07-16" },
             { "type": "metric", "key": "score.execution", "value": 1 }
@@ -1041,7 +1059,7 @@
         },
         {
           "id": "quit-after-spending",
-          "label": "不玩了，但你注册公司啥的已经花了x元（前面计算），真的不玩？",
+          "label": "不玩了，但首年总投入已经到 {{spent}}，真的不玩？",
           "outcome": "exit",
           "exitTitle": "带宽闸门刹车手",
           "effects": []
@@ -1086,8 +1104,7 @@
           "label": "提交网站备案，7天出结果",
           "effects": [
             { "type": "set-fact", "key": "miitFiled", "value": true },
-            { "type": "effort", "bucket": "founderHours", "hours": 6, "track": "filing", "label": "网站备案材料准备" },
-            { "type": "wait", "track": "filing", "days": 7, "blocking": true, "label": "工信部备案审核" },
+            { "type": "wait", "track": "filing", "days": 7, "blocking": true, "label": "工信部备案全流程（7天）" },
             { "type": "metric", "key": "score.execution", "value": 3 },
             { "type": "metric", "key": "score.compliance", "value": 2 }
           ]
@@ -1139,8 +1156,7 @@
           "label": "来都来了，提交公安备案，7天出结果",
           "effects": [
             { "type": "set-fact", "key": "policeFiled", "value": true },
-            { "type": "effort", "bucket": "founderHours", "hours": 4, "track": "filing", "label": "公安联网备案材料准备" },
-            { "type": "wait", "track": "filing", "days": 7, "blocking": true, "label": "公安联网备案办理" },
+            { "type": "wait", "track": "filing", "days": 7, "blocking": true, "label": "公安联网备案全流程（7天）" },
             { "type": "metric", "key": "score.execution", "value": 2 },
             { "type": "metric", "key": "score.compliance", "value": 2 }
           ]
@@ -1160,7 +1176,7 @@
       "chapterId": "compliance",
       "prompt": "老师，备案都通过了，该办证了，你的网站经营范围是什么？这决定要不要花100万",
       "defaultNextQuestionId": "Q20",
-      "factNotes": ["注册资本不是当前已花费用。", "许可、中介和人员成本全部标记为待确认，不直接扣款。", "经营许可是否适用应按实际业务形态和属地要求核实。"],
+      "factNotes": ["平台路线默认已有100万注册资本门槛资金，并计入本局首年总投入；它不是工信部备案费用。", "许可、中介和人员成本全部标记为待确认，不直接扣款。", "经营许可是否适用应按实际业务形态和属地要求核实。"],
       "visual": {
         "sceneId": "Q19",
         "desktopAsset": "/assets/pixel/scenes-v2/Q19-desktop.webp",
@@ -1224,6 +1240,7 @@
           "label": "只卖自己开发的产品或服务，没有第三方入驻。",
           "effects": [
             { "type": "set-fact", "key": "businessScope", "value": "self-operated" },
+            { "type": "effort", "bucket": "founderHours", "hours": 12, "track": "compliance", "label": "自营路线许可调研（2天）" },
             { "type": "todo", "id": "verify-self-operated-license", "label": "按自营路线核实经营许可适用性", "timing": "before-launch" },
             { "type": "metric", "key": "score.compliance", "value": 3 }
           ]
@@ -1233,6 +1250,7 @@
           "label": "只发布自己的内容，不给别人开放发布平台。",
           "effects": [
             { "type": "set-fact", "key": "businessScope", "value": "self-published" },
+            { "type": "effort", "bucket": "founderHours", "hours": 12, "track": "compliance", "label": "自行发布路线许可调研（2天）" },
             { "type": "todo", "id": "verify-self-published-license", "label": "按自行发布路线核实经营许可适用性", "timing": "before-launch" },
             { "type": "metric", "key": "score.compliance", "value": 3 }
           ]
@@ -1243,7 +1261,8 @@
           "visualOutcome": "rich-confetti",
           "effects": [
             { "type": "set-fact", "key": "businessScope", "value": "platform" },
-            { "type": "money", "id": "q19-capital-threshold", "bucket": "capitalRequirement", "amount": 1000000, "currency": "CNY", "label": "经营许可注册资本门槛", "sourceType": "规则核实项", "chargeTiming": "资格门槛", "refundable": false, "priceDate": "2026-07-16" },
+            { "type": "effort", "bucket": "founderHours", "hours": 12, "track": "compliance", "label": "平台经营许可调研（2天）" },
+            { "type": "money", "id": "q19-capital-threshold", "bucket": "capitalRequirement", "amount": 1000000, "currency": "CNY", "label": "ICP 经营许可注册资本门槛", "sourceType": "用户口径 + 规则核实项", "chargeTiming": "资格门槛，计入首年总投入", "refundable": false, "priceDate": "2026-07-16" },
             { "type": "money", "id": "q19-license-services", "bucket": "pendingQuote", "amount": null, "currency": "CNY", "label": "许可、中介、人员与整改成本", "sourceType": "待询价", "chargeTiming": "确认适用后", "refundable": false },
             { "type": "todo", "id": "verify-platform-license", "label": "核实平台路线许可及办理材料", "timing": "before-launch" },
             { "type": "metric", "key": "score.compliance", "value": 3 }
@@ -1338,8 +1357,8 @@
           "effects": [
             { "type": "set-fact", "key": "publicExpression", "value": true },
             { "type": "set-fact", "key": "securityAssessmentStatus", "value": "self" },
+            { "type": "effort", "bucket": "founderHours", "hours": 42, "track": "compliance", "label": "自行安全评估（7天）" },
             { "type": "todo", "id": "self-security-assessment", "label": "自行开展安全评估", "timing": "before-launch" },
-            { "type": "effort", "bucket": "founderHours", "hours": 24, "track": "compliance", "label": "自行安全评估" },
             { "type": "metric", "key": "score.compliance", "value": 2 }
           ]
         },
@@ -1349,7 +1368,8 @@
           "effects": [
             { "type": "set-fact", "key": "publicExpression", "value": true },
             { "type": "set-fact", "key": "securityAssessmentStatus", "value": "third-party" },
-            { "type": "money", "id": "q20-third-party-assessment", "bucket": "pendingQuote", "amount": 12000, "currency": "CNY", "label": "第三方安全评估当前询价", "sourceType": "用户询价", "chargeTiming": "确认后支付", "refundable": true, "priceDate": "2026-07-16" },
+            { "type": "effort", "bucket": "founderHours", "hours": 42, "track": "compliance", "label": "第三方安全评估（7天）" },
+            { "type": "money", "id": "q20-third-party-assessment", "bucket": "firstYearCommitted", "amount": 12000, "currency": "CNY", "label": "第三方安全评估一次费用", "sourceType": "用户询价", "chargeTiming": "确认后支付", "refundable": true, "priceDate": "2026-07-16" },
             { "type": "metric", "key": "score.compliance", "value": 2 }
           ]
         },
@@ -1416,7 +1436,8 @@
           "label": "只存了数据，涉及等保二级，一次5万。",
           "effects": [
             { "type": "set-fact", "key": "mlpsPressureRoute", "value": "level-two" },
-            { "type": "money", "id": "q21-level-two", "bucket": "pendingQuote", "amount": 50000, "currency": "CNY", "label": "等保二级历史压力预算", "sourceType": "用户历史口径", "chargeTiming": "定级后确认", "refundable": true, "priceDate": "2026-07-16" },
+            { "type": "effort", "bucket": "founderHours", "hours": 84, "track": "compliance", "label": "等保二级采购部署、评估、整改与复评（14天）" },
+            { "type": "money", "id": "q21-level-two", "bucket": "firstYearCommitted", "amount": 50000, "currency": "CNY", "label": "等保二级测评与整改一次预算", "sourceType": "用户历史口径", "chargeTiming": "定级后支付", "refundable": true, "priceDate": "2026-07-16" },
             { "type": "todo", "id": "mlps-classification", "label": "按实际系统开展等保定级研判", "timing": "before-launch" },
             { "type": "metric", "key": "score.compliance", "value": 2 }
           ]
@@ -1426,7 +1447,8 @@
           "label": "我还有支付，涉及等保三级，一次10万。",
           "effects": [
             { "type": "set-fact", "key": "mlpsPressureRoute", "value": "level-three" },
-            { "type": "money", "id": "q21-level-three", "bucket": "pendingQuote", "amount": 100000, "currency": "CNY", "label": "等保三级历史压力预算", "sourceType": "用户历史口径", "chargeTiming": "定级后确认", "refundable": true, "priceDate": "2026-07-16" },
+            { "type": "effort", "bucket": "founderHours", "hours": 126, "track": "compliance", "label": "等保三级采购部署、评估、整改与复评（21天）" },
+            { "type": "money", "id": "q21-level-three", "bucket": "firstYearCommitted", "amount": 100000, "currency": "CNY", "label": "等保三级测评与整改一次预算", "sourceType": "用户历史口径", "chargeTiming": "定级后支付", "refundable": true, "priceDate": "2026-07-16" },
             { "type": "todo", "id": "mlps-classification", "label": "按实际系统开展等保定级研判", "timing": "before-launch" },
             { "type": "metric", "key": "score.compliance", "value": 2 }
           ]
@@ -1510,7 +1532,7 @@
           "label": "明白...了吧。",
           "effects": [
             { "type": "set-fact", "key": "positioning", "value": "clear" },
-            { "type": "effort", "bucket": "founderHours", "hours": 6, "track": "marketing", "label": "确认用户、场景、需求和竞争关系" },
+            { "type": "effort", "bucket": "founderHours", "hours": 18, "track": "marketing", "label": "确认用户、场景、需求和竞争关系（3天）" },
             { "type": "metric", "key": "score.business", "value": 8 }
           ]
         },
@@ -1520,7 +1542,7 @@
           "effects": [
             { "type": "set-fact", "key": "positioning", "value": "differentiation-risk" },
             { "type": "todo", "id": "product-differentiation", "label": "补充产品差异化与防御策略", "timing": "before-launch" },
-            { "type": "effort", "bucket": "founderHours", "hours": 12, "track": "marketing", "label": "差异化研究" },
+            { "type": "effort", "bucket": "founderHours", "hours": 18, "track": "marketing", "label": "差异化研究（3天）" },
             { "type": "metric", "key": "score.business", "value": 4 }
           ]
         },
@@ -1530,8 +1552,7 @@
           "effects": [
             { "type": "set-fact", "key": "positioning", "value": "research-needed" },
             { "type": "todo", "id": "user-research", "label": "开展用户、场景、需求和竞争关系调研", "timing": "before-launch" },
-            { "type": "effort", "bucket": "founderHours", "hours": 24, "track": "marketing", "label": "用户调研" },
-            { "type": "wait", "track": "marketing", "days": 4, "blocking": false, "label": "用户调研周期" },
+            { "type": "effort", "bucket": "founderHours", "hours": 42, "track": "marketing", "label": "用户、场景、需求和竞争关系调研（7天）" },
             { "type": "metric", "key": "score.business", "value": 2 }
           ]
         },
@@ -1635,9 +1656,9 @@
       "id": "Q24",
       "number": 24,
       "chapterId": "business",
-      "prompt": "那用户会花多少钱，为你付费呢？你现在已经花了xx元，按照每用户每月算，大概有几种价格",
+      "prompt": "那用户会花多少钱，为你付费呢？你的首年总投入是 {{spent}}。按照上一关选择的 {{users}} 个用户、每用户每月计费，大概有这几种价格：",
       "defaultNextQuestionId": "Q25",
-      "factNotes": ["价格档位同分；收入仅显示理论流水，不在变动成本不完整时伪装成利润。"],
+      "factNotes": ["预计每月毛利（粗算）＝用户数 × 月费 − 首年总投入 ÷ 12；未扣模型用量、支付手续费、税费、获客和流失。"],
       "visual": {
         "sceneId": "Q24",
         "desktopAsset": "/assets/pixel/scenes-v2/Q24-desktop.webp",
@@ -1696,9 +1717,9 @@
       },
       "scoreWeight": { "business": 6, "costHealth": 8 },
       "options": [
-        { "id": "price-9-9", "label": "9.9元，一个月一杯咖啡钱不贵吧", "effects": [{ "type": "metric", "key": "monthlyPriceCny", "value": 9.9 }, { "type": "metric", "key": "score.business", "value": 6 }, { "type": "metric", "key": "score.costHealth", "value": 8 }] },
-        { "id": "price-19-9", "label": "19.9元，一个月两杯咖啡也还好？", "effects": [{ "type": "metric", "key": "monthlyPriceCny", "value": 19.9 }, { "type": "metric", "key": "score.business", "value": 6 }, { "type": "metric", "key": "score.costHealth", "value": 8 }] },
-        { "id": "price-29-9", "label": "29.9元，友情提示，美图一个月大概三十", "effects": [{ "type": "metric", "key": "monthlyPriceCny", "value": 29.9 }, { "type": "metric", "key": "score.business", "value": 6 }, { "type": "metric", "key": "score.costHealth", "value": 8 }] },
+        { "id": "price-9-9", "label": "9.9元，一个月一杯咖啡钱不贵吧｜预计每月毛利 {{monthlyGrossProfit}}", "effects": [{ "type": "effort", "bucket": "founderHours", "hours": 42, "track": "marketing", "label": "9.9元定价验证（7天）" }, { "type": "metric", "key": "monthlyPriceCny", "value": 9.9 }, { "type": "metric", "key": "score.business", "value": 6 }, { "type": "metric", "key": "score.costHealth", "value": 8 }] },
+        { "id": "price-19-9", "label": "19.9元，一个月两杯咖啡也还好？｜预计每月毛利 {{monthlyGrossProfit}}", "effects": [{ "type": "effort", "bucket": "founderHours", "hours": 42, "track": "marketing", "label": "19.9元定价验证（7天）" }, { "type": "metric", "key": "monthlyPriceCny", "value": 19.9 }, { "type": "metric", "key": "score.business", "value": 6 }, { "type": "metric", "key": "score.costHealth", "value": 8 }] },
+        { "id": "price-29-9", "label": "29.9元，友情提示，美图一个月大概三十｜预计每月毛利 {{monthlyGrossProfit}}", "effects": [{ "type": "effort", "bucket": "founderHours", "hours": 42, "track": "marketing", "label": "29.9元定价验证（7天）" }, { "type": "metric", "key": "monthlyPriceCny", "value": 29.9 }, { "type": "metric", "key": "score.business", "value": 6 }, { "type": "metric", "key": "score.costHealth", "value": 8 }] },
         { "id": "cannot-charge", "label": "我靠，打不了一点呜呜呜", "outcome": "exit", "exitTitle": "清醒的撤退者", "effects": [] }
       ]
     },
@@ -1772,7 +1793,6 @@
           "outcome": "result",
           "effects": [
             { "type": "set-fact", "key": "acquisition", "value": "organic" },
-            { "type": "effort", "bucket": "recurringMonthlyHours", "hours": 40, "track": "marketing", "label": "内容、社群与口碑运营" },
             { "type": "metric", "key": "score.execution", "value": 1 },
             { "type": "metric", "key": "score.business", "value": 6 },
             { "type": "metric", "key": "score.costHealth", "value": 7 }
@@ -1818,7 +1838,6 @@
     ],
     "badges": [
       { "id": "love-powered", "label": "为爱发电永久会员", "when": { "fact": "commercial", "equals": false }, "priority": 90 },
-      { "id": "one-person-company", "label": "一人四岗董事长", "when": { "fact": "hasCompany", "equals": true }, "priority": 80 },
       { "id": "ai-runtime", "label": "Token 燃烧工程师", "when": { "fact": "runtimeAi", "equals": true }, "priority": 70 },
       { "id": "zero-user-launch", "label": "零人产品发布官", "when": { "fact": "zeroUserLaunch", "equals": true }, "priority": 100 },
       { "id": "organic-growth", "label": "自然流体力劳动者", "when": { "fact": "acquisition", "equals": "organic" }, "priority": 60 },
