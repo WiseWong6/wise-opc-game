@@ -262,6 +262,7 @@ export interface TimeLedger {
   founderHours: number
   recurringMonthlyHours: number
   tracks: TimeTracks
+  elapsedDays: number
   criticalPathDays: number
 }
 
@@ -385,6 +386,7 @@ export function createEmptyLedger(): QuizLedger {
         compliance: emptyTrack(),
         marketing: emptyTrack(),
       },
+      elapsedDays: 0,
       criticalPathDays: 0,
     },
     todos: [],
@@ -402,6 +404,7 @@ function cloneLedger(ledger: QuizLedger): QuizLedger {
     time: {
       founderHours: ledger.time.founderHours,
       recurringMonthlyHours: ledger.time.recurringMonthlyHours,
+      elapsedDays: ledger.time.elapsedDays,
       criticalPathDays: ledger.time.criticalPathDays,
       tracks: Object.fromEntries(
         TIME_TRACKS.map((track) => [track, { ...ledger.time.tracks[track] }]),
@@ -411,8 +414,13 @@ function cloneLedger(ledger: QuizLedger): QuizLedger {
   }
 }
 
-function recalculateCriticalPath(ledger: QuizLedger, effectiveHoursPerDay: number): void {
+function recalculateTimeTotals(ledger: QuizLedger, effectiveHoursPerDay: number): void {
   const dailyHours = effectiveHoursPerDay > 0 ? effectiveHoursPerDay : 6
+  ledger.time.elapsedDays = ledger.time.founderHours / dailyHours
+    + TIME_TRACKS.reduce((total, track) => {
+      const item = ledger.time.tracks[track]
+      return total + item.blockingWaitDays + item.nonBlockingWaitDays
+    }, 0)
   ledger.time.criticalPathDays = Math.max(
     0,
     ...TIME_TRACKS.map((track) => {
@@ -568,14 +576,14 @@ function applyEffect(
       state.ledger.time.recurringMonthlyHours += effect.hours
       track.recurringMonthlyHours += effect.hours
     }
-    recalculateCriticalPath(state.ledger, quiz.definition.effectiveHoursPerDay)
+    recalculateTimeTotals(state.ledger, quiz.definition.effectiveHoursPerDay)
     return
   }
   if (effect.type === 'wait') {
     const track = state.ledger.time.tracks[effect.track]
     if (effect.blocking) track.blockingWaitDays += effect.days
     else track.nonBlockingWaitDays += effect.days
-    recalculateCriticalPath(state.ledger, quiz.definition.effectiveHoursPerDay)
+    recalculateTimeTotals(state.ledger, quiz.definition.effectiveHoursPerDay)
     return
   }
   if (effect.type === 'todo') {
@@ -1034,7 +1042,7 @@ export function interpolateQuizText(
   ].reduce((text, [token, replacement]) => text.split(token).join(replacement), value)
 }
 
-export function formatLedger(ledger: QuizLedger): Record<CostBucket, string> & { founderTime: string; criticalPath: string } {
+export function formatLedger(ledger: QuizLedger): Record<CostBucket, string> & { founderTime: string; elapsedTime: string; criticalPath: string } {
   const formatted = Object.fromEntries(
     COST_BUCKETS.map((bucket) => {
       const data = ledger.costs[bucket]
@@ -1044,6 +1052,7 @@ export function formatLedger(ledger: QuizLedger): Record<CostBucket, string> & {
   return {
     ...formatted,
     founderTime: `${ledger.time.founderHours} 小时 + ${ledger.time.recurringMonthlyHours} 小时/月`,
+    elapsedTime: `${Math.round(ledger.time.elapsedDays * 10) / 10} 天`,
     criticalPath: `${Math.round(ledger.time.criticalPathDays * 10) / 10} 天`,
   }
 }

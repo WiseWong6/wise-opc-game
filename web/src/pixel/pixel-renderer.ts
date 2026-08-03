@@ -102,14 +102,14 @@ export function changedHudKinds(beforeState: QuizState, afterState: QuizState): 
     changed.add('monthly')
     changed.add('annual')
   }
-  if (before.time.criticalPathDays !== after.time.criticalPathDays) changed.add('days')
+  if (before.time.elapsedDays !== after.time.elapsedDays) changed.add('days')
   return changed
 }
 
 function pixelLedgerMarkup(gameState: QuizState, changed = new Set<PixelHudKind>()): string {
   const rawLedger = pixelAccountingLedger(gameState)
   const financials = summarizeFinancials(rawLedger, gameState.result?.metrics ?? gameState.metrics)
-  const days = Math.round(rawLedger.time.criticalPathDays * 10) / 10
+  const days = Math.round(rawLedger.time.elapsedDays * 10) / 10
   const cells = [
     {
       kind: 'monthly' as const,
@@ -535,7 +535,7 @@ function costSummaryMarkup(gameState: QuizState): string {
       <div><dt>月均投入</dt><dd>${escapeHtml(compactCurrency(financials.monthlyAverageInvestmentCny, financials.hasUnpricedFirstYearInvestment))}</dd></div>
       <div><dt>首年总投入</dt><dd>${escapeHtml(compactCurrency(financials.firstYearInvestmentCny, financials.hasUnpricedFirstYearInvestment))}</dd></div>
       ${Object.entries(COST_LABELS).map(([key, label]) => `<div><dt>${label}</dt><dd>${escapeHtml(formatted[key as keyof typeof COST_LABELS])}</dd></div>`).join('')}
-      <div><dt>累计天数</dt><dd>${escapeHtml(formatted.criticalPath)}</dd></div>
+      <div><dt>累计天数</dt><dd>${escapeHtml(formatted.elapsedTime)}</dd></div>
     </dl>
   `
 }

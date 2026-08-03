@@ -96,7 +96,9 @@ test('六类费用、工时、等待和待办各自记账，不把报价或资�
   assert.equal(state.ledger.costs.capitalRequirement.totalCny, 1_000_000)
   assert.equal(state.ledger.time.founderHours, 12)
   assert.equal(state.ledger.time.recurringMonthlyHours, 8)
+  assert.equal(state.ledger.time.elapsedDays, 10)
   assert.equal(state.ledger.time.criticalPathDays, 5)
+  assert.equal(formatLedger(state.ledger).elapsedTime, '10 天')
   assert.equal(state.ledger.todos[0]?.id, 'contract')
 })
 

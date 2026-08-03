@@ -8,6 +8,7 @@ import {
   type QuizDefinition,
 } from '../packages/game-core/src/index.ts'
 import {
+  changedHudKinds,
   renderPixelCostCheckpoint,
   renderPixelIntro,
   renderPixelQuestion,
@@ -16,6 +17,35 @@ import {
 import { pixelChoiceThemes } from '../web/src/pixel/pixel-choice-themes.ts'
 
 const quiz = quizData as unknown as QuizDefinition
+
+test('备案等待即使未改变并行关键路径，也会刷新 HUD 累计天数', () => {
+  let state = restartGame(quiz)
+  while (state.phase === 'playing' && state.currentQuestionId !== 'Q17') {
+    const question = quiz.questions.find((candidate) => candidate.id === state.currentQuestionId)
+    const option = question?.options.find((candidate) => candidate.outcome !== 'exit')
+    assert.ok(option)
+    state = chooseOption(quiz, state, option.id)
+  }
+
+  const beforeMiit = state
+  const afterMiit = chooseOption(quiz, beforeMiit, 'submit-miit-filing')
+  assert.equal(afterMiit.ledger.time.criticalPathDays, beforeMiit.ledger.time.criticalPathDays)
+  assert.deepEqual([...changedHudKinds(beforeMiit, afterMiit)], ['days'])
+
+  const question = quiz.questions.find((candidate) => candidate.id === 'Q17')
+  const option = question?.options.find((candidate) => candidate.id === 'submit-miit-filing')
+  assert.ok(question)
+  assert.ok(option)
+  const markup = renderPixelQuestion(beforeMiit, quiz, {
+    optionId: option.id,
+    optionLabel: option.label,
+    outcome: 'resolved',
+    visualOutcome: option.visualOutcome,
+    nextState: afterMiit,
+  })
+  assert.match(markup, /pixel-hud__cell--days pixel-hud__cell--changed/)
+  assert.match(markup, new RegExp(`${afterMiit.ledger.time.elapsedDays}\\s*天`))
+})
 
 test('像素版首页顶部只保留月均投入、首年投入、天数三格与开始入口', () => {
   const state = restartGame(quiz)

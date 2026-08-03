@@ -71,7 +71,7 @@ function interpolateText(
 function hudMarkup(gameState: QuizState, changed: Set<PixelHudKind> = new Set()): string {
   const ledger = pixelAccountingLedger(gameState)
   const financials = summarizeFinancials(ledger, gameState.result?.metrics ?? gameState.metrics)
-  const days = Math.round(ledger.time.criticalPathDays * 10) / 10
+  const days = Math.round(ledger.time.elapsedDays * 10) / 10
   const cells = [
     {
       kind: 'monthly' as const,
@@ -408,7 +408,7 @@ function costSummaryMarkup(gameState: QuizState): string {
       <div><dt>月均投入</dt><dd>${escapeHtml(compactCurrency(financials.monthlyAverageInvestmentCny, financials.hasUnpricedFirstYearInvestment))}</dd></div>
       <div><dt>首年总投入</dt><dd>${escapeHtml(compactCurrency(financials.firstYearInvestmentCny, financials.hasUnpricedFirstYearInvestment))}</dd></div>
       ${Object.entries(COST_LABELS).map(([key, label]) => `<div><dt>${label}</dt><dd>${escapeHtml(formatted[key as keyof typeof COST_LABELS])}</dd></div>`).join('')}
-      <div><dt>累计天数</dt><dd>${escapeHtml(formatted.criticalPath)}</dd></div>
+      <div><dt>累计天数</dt><dd>${escapeHtml(formatted.elapsedTime)}</dd></div>
     </dl>
   `
 }

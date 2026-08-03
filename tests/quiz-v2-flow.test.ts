@@ -278,8 +278,13 @@ test('Q13 放弃登录商业化会撤销微信首年与续费，返回重选可�
   assert.equal(restored.ledger.costs.variable.items.some((item) => item.id === 'q08-payment-fee'), true)
 })
 
-test('工信与公安备案的两段 7 天都进入阻塞关键路径', () => {
-  const afterPoliceFiling = answer(reach('Q18'), 'submit-police-filing')
+test('工信与公安备案各让 HUD 累计天数增加 7 天，并保留并行关键路径', () => {
+  const beforeMiitFiling = reach('Q17')
+  const afterMiitFiling = answer(beforeMiitFiling, 'submit-miit-filing')
+  const afterPoliceFiling = answer(afterMiitFiling, 'submit-police-filing')
+
+  assert.equal(afterMiitFiling.ledger.time.elapsedDays, beforeMiitFiling.ledger.time.elapsedDays + 7)
+  assert.equal(afterPoliceFiling.ledger.time.elapsedDays, afterMiitFiling.ledger.time.elapsedDays + 7)
   assert.equal(afterPoliceFiling.ledger.time.tracks.filing.blockingWaitDays, 14)
   assert.equal(afterPoliceFiling.ledger.time.tracks.filing.nonBlockingWaitDays, 0)
   assert.ok(afterPoliceFiling.ledger.time.criticalPathDays >= 14)
